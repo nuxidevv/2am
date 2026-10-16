@@ -50,7 +50,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .add-playlist-btn:hover{background:rgba(255,255,255,.16)}
 .add-playlist-btn svg{width:16px;height:16px}
 
-/* GRID (cards sans contours) */
+/* GRID */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px 14px;margin-bottom:12px}
 .card{cursor:pointer;transition:.15s}
 .card:hover{transform:translateY(-3px)}
@@ -98,7 +98,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .empty-title{font-size:15px;font-weight:600;color:var(--dim);margin-bottom:4px}
 .empty-sub{font-size:13px}
 
-/* BOTTOM PLAYER (hidden by default, shown only when minimized) */
+/* BOTTOM PLAYER */
 .player{
   height:76px;display:none;grid-template-columns:1fr minmax(240px,480px) 1fr;
   align-items:center;gap:18px;padding:0 22px;flex-shrink:0;
@@ -235,7 +235,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .search-result-add svg{width:16px;height:16px}
 .search-msg{padding:30px 20px;text-align:center;color:rgba(255,255,255,.45);font-size:13.5px;line-height:1.5}
 
-.playlist-picker{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:220;opacity:0;pointer-events:none;transition:.2s}
+.playlist-picker{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:350;opacity:0;pointer-events:none;transition:.2s}
 .playlist-picker.open{opacity:1;pointer-events:auto}
 .picker-card{width:100%;max-width:400px;background:rgba(22,22,22,.97);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:22px;transform:scale(.95);transition:.25s;max-height:80vh;overflow-y:auto}
 .playlist-picker.open .picker-card{transform:scale(1)}
@@ -333,7 +333,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     <div id="viewPlaylist" style="display:none"></div>
   </main>
 
-  <!-- BOTTOM PLAYER (hidden when no track) -->
   <footer class="player" id="bottomPlayer">
     <div class="player-left" id="playerLeft">
       <div class="player-art" id="pArt">2</div>
@@ -365,7 +364,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
 <div id="ytHidden"><div id="ytPlayer"></div></div>
 
-<!-- FULLSCREEN PLAYER -->
 <div class="fp" id="fp">
   <div class="fp-head">
     <button class="icon-btn" id="fpMinimize" title="Minimiser">
@@ -411,7 +409,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- IMPORT MODAL -->
 <div class="modal" id="importModal">
   <div class="modal-card">
     <div class="modal-handle"></div>
@@ -431,7 +428,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- ONLINE SEARCH MODAL -->
 <div class="modal" id="searchModal">
   <div class="modal-card">
     <div class="modal-handle"></div>
@@ -446,7 +442,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- EDIT TRACK MODAL -->
 <div class="modal" id="editTrackModal">
   <div class="modal-card">
     <div class="modal-handle"></div>
@@ -462,7 +457,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- EDIT PLAYLIST MODAL -->
 <div class="modal" id="editPlModal">
   <div class="modal-card">
     <div class="modal-handle"></div>
@@ -478,7 +472,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- PICKER -->
 <div class="playlist-picker" id="playlistPicker">
   <div class="picker-card">
     <h4 id="pickerTitle">Ajouter à…</h4>
@@ -490,14 +483,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- TRACK OPTIONS -->
 <div class="playlist-picker" id="trackOptions">
   <div class="picker-card">
     <h4>Options</h4>
-    <div class="picker-item" id="optLike"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span id="optLikeText">Ajouter aux titres aimés</span></div>
-    <div class="picker-item" id="optAddPl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Ajouter à une playlist</span></div>
-    <div class="picker-item" id="optEdit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><span>Modifier le titre</span></div>
-    <div class="picker-item" id="optDel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg><span>Supprimer</span></div>
   </div>
 </div>
 
@@ -526,9 +514,9 @@ const S={
   filter:'',pendingTrack:null,currentPlaylistId:null,
   adPlaying:false,editingTrackId:null,editingPlId:null,
   view:'home',queue:null,trending:[],trendingRegion:'',
-  fullscreenOpen:false
+  fullscreenOpen:false,playlistContext:null
 };
-const LS='2am:v6';
+const LS='2am:v7';
 const audio=new Audio();audio.preload='metadata';
 
 /* ===== Persist ===== */
@@ -691,7 +679,7 @@ function updateBottomPlayerVisibility(){
   else p.classList.remove('visible');
 }
 
-/* ===== Fullscreen player ===== */
+/* ===== Fullscreen ===== */
 function openFullscreen(){
   if(S.cur<0)return;
   S.fullscreenOpen=true;
@@ -709,10 +697,11 @@ $('#fpMinimize').onclick=closeFullscreen;
 $('#playerLeft').onclick=openFullscreen;
 
 /* ===== Playback ===== */
-function play(idx,queue){
+function play(idx,queue,context){
   if(idx<0||idx>=S.tracks.length)return;
   S.cur=idx;const t=S.tracks[idx];
   if(queue)S.queue=queue;
+  if(context!==undefined)S.playlistContext=context;
   S.adPlaying=false;updateAdUI();
   updateMediaSession(t);
   if(t.type==='yt'){
@@ -724,7 +713,6 @@ function play(idx,queue){
     stopPoll();stopAdPoll();
     audio.src=t.src;audio.play().then(()=>{S.playing=true;updatePlayIcon();renderCurrentView();}).catch(()=>{S.playing=false;updatePlayIcon();renderCurrentView();toast('Lecture impossible');});
   }
-  // Auto-open fullscreen
   openFullscreen();
   if(S.playing)$('#fp').classList.add('playing');
 }
@@ -865,7 +853,7 @@ $('#fpShuffle').onclick=()=>$('#shuffle').click();
 $('#repeat').onclick=()=>{S.repeat=(S.repeat+1)%3;$('#repeat').classList.toggle('active',S.repeat>0);$('#fpRepeat').classList.toggle('active',S.repeat>0);toast(['Répétition désactivée','Répéter la playlist','Répéter le titre'][S.repeat]);};
 $('#fpRepeat').onclick=()=>$('#repeat').click();
 
-/* ===== Like button ===== */
+/* ===== Like ===== */
 $('#fpLike').onclick=toggleLikeCurrent;
 function toggleLikeCurrent(){
   if(S.cur<0)return;
@@ -880,16 +868,59 @@ function updateLikeUI(){
   $('#fpLike').classList.toggle('liked',liked);
   $('#fpLike').innerHTML=liked?heartFilled:heartOutline;
 }
+function toggleLikeByIdx(idx){
+  const t=S.tracks[idx];if(!t)return;
+  if(isLiked(t.id)){S.liked=S.liked.filter(id=>id!==t.id);toast('Retiré des titres aimés');}
+  else{S.liked.push(t.id);toast('Ajouté aux titres aimés');}
+  save();updateLikeUI();renderCurrentView();
+}
 
-/* ===== Fullscreen options ===== */
+/* ===== Fullscreen options (adaptatif selon contexte) ===== */
 $('#fpOptions').onclick=()=>{
   if(S.cur<0)return;
   const t=S.tracks[S.cur];
   const liked=isLiked(t.id);
-  $('#optLikeText').textContent=liked?'Retirer des titres aimés':'Ajouter aux titres aimés';
-  $('#optLike').querySelector('svg').innerHTML=liked?'<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="currentColor"/>':'<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>';
+
+  let plName=null;
+  let inContext=false;
+  if(S.playlistContext==='liked'){
+    plName='Titres aimés';
+    inContext=S.liked.includes(t.id);
+  }else if(S.playlistContext){
+    const pl=S.playlists.find(x=>x.id===S.playlistContext);
+    if(pl){plName=pl.name;inContext=pl.trackIds.includes(t.id);}
+  }
+
+  let html=`<h4>Options</h4>
+    <div class="picker-item" id="optLike">
+      ${liked?heartFilled:heartOutline}
+      <span>${liked?'Retirer des titres aimés':'Ajouter aux titres aimés'}</span>
+    </div>
+    <div class="picker-item" id="optAddPl">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span>Ajouter à une playlist</span>
+    </div>`;
+
+  if(plName&&inContext){
+    html+=`<div class="picker-item" id="optRemovePl">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+      <span>Retirer de « ${esc(plName)} »</span>
+    </div>`;
+  }
+
+  html+=`<div class="picker-item" id="optEdit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      <span>Modifier le titre</span>
+    </div>
+    <div class="picker-item" id="optDel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      <span>Supprimer</span>
+    </div>`;
+
+  $('#trackOptions').querySelector('.picker-card').innerHTML=html;
   $('#trackOptions').classList.add('open');
 };
+
 $('#trackOptions').addEventListener('click',e=>{
   if(e.target===$('#trackOptions')){$('#trackOptions').classList.remove('open');return;}
   const item=e.target.closest('.picker-item');
@@ -900,9 +931,22 @@ $('#trackOptions').addEventListener('click',e=>{
   else if(id==='optAddPl'){S.pendingTrack=S.tracks[S.cur];openPlaylistPicker('Ajouter à une playlist…');}
   else if(id==='optEdit')openEditTrack(S.cur);
   else if(id==='optDel'){deleteTrack(S.cur);}
+  else if(id==='optRemovePl'){
+    const t=S.tracks[S.cur];if(!t)return;
+    if(S.playlistContext==='liked'){
+      S.liked=S.liked.filter(lid=>lid!==t.id);
+      toast('Retiré des titres aimés');
+    }else if(S.playlistContext){
+      const pl=S.playlists.find(x=>x.id===S.playlistContext);
+      if(pl){pl.trackIds=pl.trackIds.filter(lid=>lid!==t.id);toast('Retiré de la playlist');}
+    }
+    save();
+    updateLikeUI();
+    if(S.view==='playlist')renderPlaylistView();else renderCurrentView();
+  }
 });
 
-/* ===== Track rendering ===== */
+/* ===== Track row ===== */
 function trackRowHTML(t,opts={}){
   const idx=S.tracks.indexOf(t);
   const active=idx===S.cur;
@@ -921,17 +965,19 @@ function trackRowHTML(t,opts={}){
   </div>`;
 }
 
-/* ===== View rendering ===== */
+/* ===== Views ===== */
 function renderCurrentView(){
   renderPlayer();
   if(S.view==='home')renderHome();
   else if(S.view==='library')renderLibrary();
   else if(S.view==='playlist')renderPlaylistView();
+  renderFullscreen();
   updateLikeUI();
 }
 function setView(v,plId){
   S.view=v;
   if(v==='playlist')S.currentPlaylistId=plId;else S.currentPlaylistId=null;
+  if(v!=='playlist')S.playlistContext=null;
   $('#viewHome').style.display=v==='home'?'block':'none';
   $('#viewLibrary').style.display=v==='library'?'block':'none';
   $('#viewPlaylist').style.display=v==='playlist'?'block':'none';
@@ -1021,6 +1067,7 @@ function renderPlaylistView(){
   const art=isLikedView
     ? '<svg style="width:60px;height:60px;fill:#fff" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
     : (cover?`<img src="${esc(cover)}" alt="">`:'<span>♪</span>');
+  const ctx=isLikedView?'liked':p.id;
   el.innerHTML=`
     <button class="icon-btn" id="backBtn" style="margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
     <div class="pl-head">
@@ -1042,7 +1089,7 @@ function renderPlaylistView(){
   `;
   $('#backBtn').onclick=()=>setView('library');
   const plPlay=$('#plPlay');
-  if(plPlay)plPlay.onclick=()=>{if(!tracks.length)return;const ids=tracks.map(t=>t.id);play(S.tracks.indexOf(tracks[0]),ids);};
+  if(plPlay)plPlay.onclick=()=>{if(!tracks.length)return;const ids=tracks.map(t=>t.id);play(S.tracks.indexOf(tracks[0]),ids,ctx);};
   const plEditBtn=$('#plEditBtn');
   if(plEditBtn)plEditBtn.onclick=()=>openEditPlaylist(p.id);
   el.querySelectorAll('.track').forEach(row=>{
@@ -1056,7 +1103,7 @@ function renderPlaylistView(){
       const del=e.target.closest('[data-del]');
       if(del){e.stopPropagation();deleteTrack(+del.dataset.del);return;}
       const idx=+row.dataset.idx;
-      if(idx===S.cur)toggle();else play(idx,ids);
+      if(idx===S.cur)toggle();else play(idx,ids,ctx);
     });
   });
   if(!isLikedView&&tracks.length)enableDragReorder(el,p);
@@ -1109,17 +1156,6 @@ function renderFullscreen(){
   $('#fpArt').innerHTML=t.thumb?`<img src="${esc(t.thumb)}" alt="">`:`<span>${esc((t.title[0]||'?').toUpperCase())}</span>`;
   updateLikeUI();
 }
-// call renderFullscreen from renderCurrentView too
-const _rcv=renderCurrentView;
-renderCurrentView=function(){_rcv();renderFullscreen();};
-
-/* ===== Like helper ===== */
-function toggleLikeByIdx(idx){
-  const t=S.tracks[idx];if(!t)return;
-  if(isLiked(t.id)){S.liked=S.liked.filter(id=>id!==t.id);toast('Retiré des titres aimés');}
-  else{S.liked.push(t.id);toast('Ajouté aux titres aimés');}
-  save();updateLikeUI();renderCurrentView();
-}
 
 /* ===== Content clicks ===== */
 $('#content').addEventListener('click',e=>{
@@ -1140,11 +1176,11 @@ $('#content').addEventListener('click',e=>{
     const del=e.target.closest('[data-del]');
     if(del){e.stopPropagation();deleteTrack(+del.dataset.del);return;}
     const idx=+row.dataset.idx;
-    if(idx===S.cur)toggle();else play(idx);
+    if(idx===S.cur)toggle();else play(idx,null,null);
   }
 });
 
-/* ===== Trending actions ===== */
+/* ===== Trending ===== */
 function findExisting(ytId){return S.tracks.find(t=>t.ytId===ytId);}
 async function playTrending(i){
   const item=S.trending[i];if(!item)return;
@@ -1153,7 +1189,7 @@ async function playTrending(i){
     existing={id:uid(),title:item.title,artist:item.channel,type:'yt',ytId:item.ytId,thumb:item.thumb,duration:0,src:'https://www.youtube.com/watch?v='+item.ytId};
     S.tracks.push(existing);save();
   }
-  play(S.tracks.indexOf(existing));
+  play(S.tracks.indexOf(existing),null,null);
 }
 async function addTrending(i){
   const item=S.trending[i];if(!item)return;
@@ -1165,7 +1201,7 @@ async function addTrending(i){
   S.pendingTrack=track;openPlaylistPicker('Ajouter à une playlist…');
 }
 
-/* ===== Search bar (bibliothèque uniquement) ===== */
+/* ===== Search bar ===== */
 $('#openSearch').onclick=()=>{
   const w=$('#searchWrap');
   w.classList.toggle('show');
@@ -1304,6 +1340,7 @@ $('#epDelete').onclick=()=>{
   const p=S.playlists.find(x=>x.id===S.editingPlId);if(!p)return;
   if(!confirm('Supprimer la playlist "'+p.name+'" ?'))return;
   S.playlists=S.playlists.filter(x=>x.id!==p.id);
+  if(S.playlistContext===p.id)S.playlistContext=null;
   save();closeEditPl();setView('library');
   toast('Playlist supprimée');
 };
