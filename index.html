@@ -126,11 +126,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .fp.show-video .fp-back-btn{display:flex}
 .fp-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;position:relative;z-index:1;min-height:0;padding:12px 0}
 .fp-art{width:min(70vw,340px);height:min(70vw,340px);border-radius:20px;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.02));box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden;display:flex;align-items:center;justify-content:center;transition:transform .4s;position:relative}
-.fp-art .cover{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0;transition:opacity .6s ease}
+.fp-art .cover{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0;transition:opacity 1s ease;border-radius:20px}
 .fp-art .cover.visible{opacity:1}
-.fp-art .logo-overlay{position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:5;transition:opacity .8s ease}
+.fp-art .logo-overlay{position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:5;transition:opacity 1s ease;border-radius:20px}
 .fp-art .logo-overlay.hidden{opacity:0;pointer-events:none}
-.fp-art .logo-overlay img{width:60%;height:auto;max-height:60%;object-fit:contain}
+.fp-art .logo-overlay img{width:60%;height:auto;max-height:60%;object-fit:contain;display:block}
 .fp-art.clickable{cursor:pointer}
 .fp-art-hint{position:absolute;bottom:12px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;color:#fff;z-index:4;pointer-events:none;border:1px solid rgba(255,255,255,.15)}
 .fp-art.clickable .fp-art-hint{display:flex}
@@ -312,21 +312,16 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 <script>
 /* ============================================================
    DÉCLARATION : 2AM est une application de lecture multimédia
-   Cette ligne indique à iOS que l'app doit continuer à jouer
-   du son même en arrière-plan. iOS 16.4+ uniquement.
+   Permet à iOS de laisser la musique jouer en arrière-plan
    ============================================================ */
 (function declareMediaApp(){
   try {
-    // API moderne (iOS 16.4+) : déclare la session audio comme "playback"
     if (navigator.audioSession) {
       navigator.audioSession.type = 'playback';
     }
-    // Fallback pour les anciennes versions d'iOS via Media Session
     if ('mediaSession' in navigator) {
-      // Force le type de session à playback dès le chargement
       try { navigator.mediaSession.playbackState = 'none'; } catch(e) {}
     }
-    // Astuce supplémentaire : certains navigateurs respectent ce hint
     if (document.documentElement) {
       document.documentElement.setAttribute('data-audio-session', 'playback');
     }
@@ -587,7 +582,7 @@ var S={
   sortMode:{},colorCache:{},recCache:{},
   showVideo:false
 };
-var LS='2am:v18';
+var LS='2am:v19';
 var audio=new Audio();audio.preload='metadata';
 var trendingStatus='idle';
 var trendingError='';
@@ -774,11 +769,24 @@ function updateBottomPlayerVisibility(){var show=S.cur>=0&&!S.fullscreenOpen;var
 
 var logoTimeout=null;
 function triggerLogoFade(){
-  var overlay=$('#fpLogoOverlay');var cover=$('#fpCover');
+  var overlay=$('#fpLogoOverlay');
+  var cover=$('#fpCover');
   if(!overlay||!cover)return;
-  overlay.classList.remove('hidden');cover.classList.remove('visible');
+  overlay.classList.remove('hidden');
+  cover.classList.remove('visible');
   clearTimeout(logoTimeout);
-  logoTimeout=setTimeout(function(){overlay.classList.add('hidden');if(cover.getAttribute('src'))cover.classList.add('visible');},2000);
+  var doFade=function(){
+    logoTimeout=setTimeout(function(){
+      overlay.classList.add('hidden');
+      cover.classList.add('visible');
+    },2400);
+  };
+  if(cover.complete&&cover.naturalWidth>0){
+    doFade();
+  }else{
+    var fallback=setTimeout(doFade,2600);
+    cover.onload=function(){clearTimeout(fallback);doFade();};
+  }
 }
 function openFullscreen(){
   if(S.cur<0)return;
@@ -890,7 +898,17 @@ function playTrack(idxOrTrack,opts){
     ytLoad(t.ytId);S.playing=true;updatePlayIcon();renderCurrentView();
   }else{
     audio.src=t.src;
-    audio.play().then(function(){S.playing=true;updatePlayIcon();renderCurrentView();}).catch(function(){S.playing=false;updatePlayIcon();renderCurrentView();toast('Lecture impossible');});
+    if(navigator.audioSession){try{navigator.audioSession.type='playback';}catch(e){}}
+    var playPromise=audio.play();
+    if(playPromise&&playPromise.then){
+      playPromise.then(function(){S.playing=true;updatePlayIcon();renderCurrentView();})
+        .catch(function(err){
+          console.warn('play error',err);
+          S.playing=false;updatePlayIcon();renderCurrentView();
+        });
+    }else{
+      S.playing=true;updatePlayIcon();renderCurrentView();
+    }
   }
   openFullscreen();
 }
@@ -977,17 +995,23 @@ audio.addEventListener('loadedmetadata',function(){var t=S.tracks[S.cur];if(t&&t
 audio.addEventListener('ended',function(){nextTrack(true);});
 audio.addEventListener('play',function(){S.playing=true;updatePlayIcon();if(S.fullscreenOpen)$('#fp').classList.add('playing');});
 audio.addEventListener('pause',function(){
+  if(document.hidden)return;
   if(S.cur>=0&&S.tracks[S.cur]&&S.tracks[S.cur].type==='file'){
     S.playing=false;updatePlayIcon();$('#fp').classList.remove('playing');
   }
 });
 
+var wasPlayingBeforeHide=false;
 document.addEventListener('visibilitychange',function(){
-  if(document.hidden)return;
-  if(S.playing&&S.cur>=0){
-    var t=S.tracks[S.cur];
-    if(t&&t.type==='file'&&audio.paused){
-      audio.play().catch(function(){});
+  if(document.hidden){
+    wasPlayingBeforeHide=S.playing;
+  }else{
+    if(wasPlayingBeforeHide&&S.cur>=0){
+      var t=S.tracks[S.cur];
+      if(t&&t.type==='file'&&audio.paused){
+        if(navigator.audioSession){try{navigator.audioSession.type='playback';}catch(e){}}
+        audio.play().then(function(){S.playing=true;updatePlayIcon();}).catch(function(){});
+      }
     }
   }
 });
