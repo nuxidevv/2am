@@ -20,7 +20,7 @@ body{color:#fff;font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 90% 60% at 50% -15%,rgba(255,255,255,.07),transparent 70%)}
 .app{position:relative;z-index:1;height:100vh;height:100dvh;display:flex;flex-direction:column}
 
-#ytHidden{position:fixed;top:-9999px;left:-9999px;width:400px;height:225px;z-index:5;pointer-events:none;overflow:hidden;border-radius:16px;background:#000;box-shadow:none;transition:opacity .3s}
+#ytHidden{position:fixed;top:-9999px;left:-9999px;width:400px;height:225px;z-index:5;pointer-events:none;overflow:hidden;border-radius:16px;background:#000;transition:opacity .3s}
 #ytHidden.as-video{pointer-events:auto;box-shadow:0 30px 80px rgba(0,0,0,.7)}
 #ytHidden iframe{width:100%!important;height:100%!important;border:0!important;display:block}
 
@@ -205,21 +205,36 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .modal-actions .btn.danger{background:rgba(255,80,80,.15);color:#ff7070}
 
 /* iOS Install Modal */
-.ios-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:flex-end;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:.3s;padding:0}
+.ios-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:flex-end;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:.3s;padding:0}
 .ios-modal.open{opacity:1;pointer-events:auto}
-.ios-card{width:100%;max-width:520px;background:rgba(24,24,24,.97);backdrop-filter:blur(50px) saturate(180%);border:1px solid rgba(255,255,255,.14);border-bottom:none;border-radius:26px 26px 0 0;padding:26px 22px calc(34px + var(--sa-bottom));transform:translateY(100%);transition:.4s cubic-bezier(.2,.9,.3,1)}
+.ios-card{width:100%;max-width:640px;background:rgba(24,24,24,.97);backdrop-filter:blur(50px) saturate(180%);border:1px solid rgba(255,255,255,.14);border-bottom:none;border-radius:26px 26px 0 0;padding:22px 18px calc(24px + var(--sa-bottom));transform:translateY(100%);transition:.4s cubic-bezier(.2,.9,.3,1);max-height:94vh;overflow-y:auto}
 .ios-modal.open .ios-card{transform:translateY(0)}
-.ios-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 20px}
-.ios-title{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;text-align:center}
-.ios-sub{font-size:14px;color:var(--dim);text-align:center;margin-bottom:24px;line-height:1.5}
-.ios-step{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.ios-step:last-of-type{border-bottom:none}
-.ios-step-num{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#5B4BFF,#8B7BFF);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;color:#fff;box-shadow:0 4px 12px rgba(91,75,255,.4)}
-.ios-step-text{flex:1;font-size:14px;line-height:1.5;padding-top:4px;color:rgba(255,255,255,.9)}
+.ios-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 16px}
+.ios-title{font-size:19px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;text-align:center}
+.ios-sub{font-size:12.5px;color:var(--dim);text-align:center;margin-bottom:18px;line-height:1.4}
+
+.ios-content{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:flex-start;margin-bottom:16px}
+.ios-steps{display:flex;flex-direction:column;gap:0}
+.ios-step{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.ios-step:last-child{border-bottom:none}
+.ios-step-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#5B4BFF,#8B7BFF);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;color:#fff;box-shadow:0 3px 10px rgba(91,75,255,.45)}
+.ios-step-text{flex:1;font-size:12px;line-height:1.42;padding-top:2px;color:rgba(255,255,255,.9)}
 .ios-step-text b{color:#fff;font-weight:600}
-.ios-icon-inline{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:20px;height:20px;border-radius:5px;background:rgba(255,255,255,.1);margin:0 4px;padding:3px}
-.ios-icon-inline svg{width:14px;height:14px}
-.ios-close{width:100%;margin-top:22px;height:52px;border-radius:14px;background:#fff;color:#000;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.ios-icon-inline{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:16px;height:16px;border-radius:4px;background:rgba(255,255,255,.12);margin:0 2px;padding:2px}
+.ios-icon-inline svg{width:11px;height:11px}
+
+.ios-video{border-radius:14px;overflow:hidden;background:#000;aspect-ratio:9/16;max-height:340px;box-shadow:0 12px 32px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);position:relative}
+.ios-video video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+
+.ios-close{width:100%;margin-top:6px;height:48px;border-radius:14px;background:#fff;color:#000;border:none;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;transition:.15s}
+.ios-close:active{transform:scale(.97)}
+
+@media(max-width:420px){
+  .ios-content{gap:10px}
+  .ios-step-text{font-size:11px}
+  .ios-step-num{width:22px;height:22px;font-size:10px}
+  .ios-video{max-height:280px}
+}
 
 .drop-zone{border:1.5px dashed rgba(255,255,255,.18);border-radius:18px;padding:34px 20px;text-align:center;cursor:pointer;transition:.25s;background:rgba(255,255,255,.02)}
 .drop-zone:hover,.drop-zone.over{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.05)}
@@ -509,23 +524,31 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   <div class="ios-card">
     <div class="ios-handle"></div>
     <div class="ios-title">Ajouter 2AM à l'écran d'accueil</div>
-    <div class="ios-sub">Profite de l'app en plein écran, comme une application native</div>
+    <div class="ios-sub">Profite de l'app en plein écran, comme une app native</div>
 
-    <div class="ios-step">
-      <div class="ios-step-num">1</div>
-      <div class="ios-step-text">Ouvre le menu <b>Partager</b> de Safari <span class="ios-icon-inline"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></span> en bas de l'écran</div>
-    </div>
-    <div class="ios-step">
-      <div class="ios-step-num">2</div>
-      <div class="ios-step-text">Fais défiler et appuie sur <b>« Sur l'écran d'accueil »</b> <span class="ios-icon-inline"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 8v8M8 12h8"/></svg></span></div>
-    </div>
-    <div class="ios-step">
-      <div class="ios-step-num">3</div>
-      <div class="ios-step-text">Appuie sur <b>Ajouter</b> en haut à droite</div>
-    </div>
-    <div class="ios-step">
-      <div class="ios-step-num">4</div>
-      <div class="ios-step-text">Lance <b>2AM</b> depuis ton écran d'accueil</div>
+    <div class="ios-content">
+      <div class="ios-steps">
+        <div class="ios-step">
+          <div class="ios-step-num">1</div>
+          <div class="ios-step-text">Ouvre le menu <b>Partager</b> de Safari <span class="ios-icon-inline"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></span> en bas</div>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num">2</div>
+          <div class="ios-step-text">Fais défiler et appuie sur <b>« Sur l'écran d'accueil »</b> <span class="ios-icon-inline"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 8v8M8 12h8"/></svg></span></div>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num">3</div>
+          <div class="ios-step-text">Appuie sur <b>Ajouter</b> en haut à droite</div>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num">4</div>
+          <div class="ios-step-text">Lance <b>2AM</b> depuis ton écran d'accueil 🎵</div>
+        </div>
+      </div>
+
+      <div class="ios-video">
+        <video src="/copy_02BA0EE3-F293-4F44-A4FC-519AA6109CE8.mov" autoplay loop muted playsinline webkit-playsinline></video>
+      </div>
     </div>
 
     <button class="ios-close" id="iosClose">J'ai compris</button>
@@ -586,7 +609,7 @@ var S={
   sortMode:{},colorCache:{},recCache:{},
   showVideo:false
 };
-var LS='2am:v15';
+var LS='2am:v16';
 var audio=new Audio();
 audio.preload='metadata';
 
@@ -1005,7 +1028,6 @@ function startPreview(item,artEl){
       try{p.playVideo();}catch(e){}
       previewStartTime=Date.now();
       startRing(artEl,30000);
-      // auto-stop after 30s in case the video is shorter
       previewPreviewTimer=setTimeout(function(){
         if(previewCurrentId===item.ytId)stopPreview();
       },30500);
@@ -1189,14 +1211,11 @@ audio.addEventListener('pause',function(){
   }
 });
 
-/* ===== Background audio protection ===== */
 document.addEventListener('visibilitychange',function(){
   if(document.hidden)return;
-  // When user comes back, if we should be playing but audio is paused, resume
   if(S.playing&&S.cur>=0){
     var t=S.tracks[S.cur];
     if(t&&t.type==='file'&&audio.paused){
-      // Page was hidden; browsers may have paused. Try to resume.
       audio.play().catch(function(){});
     }
   }
@@ -1732,12 +1751,10 @@ function runSearch(q){
       '</div>';
     });
     el.innerHTML=html;
-    // Bind individual listeners (fix for wrong preview bug)
     el.querySelectorAll('.search-result').forEach(function(row){
       var idx=parseInt(row.dataset.idx,10);
       var item=results[idx];
       var artEl=row.querySelector('.search-result-art');
-      // Click on row (except + button) = preview
       row.addEventListener('click',function(e){
         if(e.target.closest('.search-result-add'))return;
         e.stopPropagation();
@@ -2060,10 +2077,22 @@ function showIosInstallModal(){
   if(!modal)return;
   modal.classList.add('open');
   var closeBtn=$('#iosClose');
-  if(closeBtn)closeBtn.onclick=function(){modal.classList.remove('open');};
+  if(closeBtn)closeBtn.onclick=function(){
+    modal.classList.remove('open');
+    var vid=modal.querySelector('video');
+    if(vid){try{vid.play().catch(function(){});}catch(e){}}
+  };
   modal.addEventListener('click',function(e){
     if(e.target===modal)modal.classList.remove('open');
   });
+  var vid=modal.querySelector('video');
+  if(vid){
+    vid.muted=true;
+    var tryPlay=function(){try{vid.play().catch(function(){});}catch(e){}};
+    tryPlay();
+    setTimeout(tryPlay,400);
+    setTimeout(tryPlay,1200);
+  }
 }
 
 /* ===== Init ===== */
@@ -2086,7 +2115,6 @@ function showIosInstallModal(){
     try{setView('home');}catch(_){}
   });
 
-  // iOS install modal: show on Safari iOS non-standalone, every visit
   if(isIOS()&&!isStandalone()){
     setTimeout(showIosInstallModal,800);
   }
