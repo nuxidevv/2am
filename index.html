@@ -20,10 +20,6 @@ body{color:#fff;font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 90% 60% at 50% -15%,rgba(255,255,255,.07),transparent 70%)}
 .app{position:relative;z-index:1;height:100vh;height:100dvh;display:flex;flex-direction:column}
 
-#ytHidden{position:fixed;top:-9999px;left:-9999px;width:400px;height:225px;z-index:5;pointer-events:none;overflow:hidden;border-radius:16px;background:#000;transition:opacity .3s}
-#ytHidden.as-video{pointer-events:auto;box-shadow:0 30px 80px rgba(0,0,0,.7)}
-#ytHidden iframe{width:100%!important;height:100%!important;border:0!important;display:block}
-
 .header{display:flex;align-items:center;justify-content:space-between;padding:calc(12px + var(--sa-top)) 22px 10px;flex-shrink:0;gap:10px}
 .logo{height:52px;width:auto;max-width:200px;display:block;object-fit:contain;filter:brightness(1.1);transition:transform .3s}
 .logo:hover{transform:scale(1.04)}
@@ -152,9 +148,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .fp.playing .fp-art{animation:pulseArt 4s ease-in-out infinite}
 @keyframes pulseArt{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
 
-.fp-video-wrap{width:min(90vw,560px);aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:transparent;box-shadow:0 30px 80px rgba(0,0,0,.7);display:none;position:relative}
+.fp-video-wrap{width:min(90vw,560px);aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;box-shadow:0 30px 80px rgba(0,0,0,.7);display:none;position:relative}
 .fp.show-video .fp-video-wrap{display:block}
 .fp.show-video .fp-art{display:none}
+
+#ytHidden{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;background:#000;border-radius:16px}
+#ytHidden > div,#ytHidden iframe{width:100%!important;height:100%!important;border:0!important;display:block!important;position:absolute!important;top:0!important;left:0!important}
 
 .fp-info{text-align:center;width:100%;max-width:520px;padding:0 8px}
 .fp-title-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px;width:100%}
@@ -204,7 +203,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .modal-actions .btn.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.08)}
 .modal-actions .btn.danger{background:rgba(255,80,80,.15);color:#ff7070}
 
-/* iOS Install Modal */
 .ios-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:flex-end;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:.3s;padding:0}
 .ios-modal.open{opacity:1;pointer-events:auto}
 .ios-card{width:100%;max-width:640px;background:rgba(24,24,24,.97);backdrop-filter:blur(50px) saturate(180%);border:1px solid rgba(255,255,255,.14);border-bottom:none;border-radius:26px 26px 0 0;padding:22px 18px calc(24px + var(--sa-bottom));transform:translateY(100%);transition:.4s cubic-bezier(.2,.9,.3,1);max-height:94vh;overflow-y:auto}
@@ -212,7 +210,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .ios-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 16px}
 .ios-title{font-size:19px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;text-align:center}
 .ios-sub{font-size:12.5px;color:var(--dim);text-align:center;margin-bottom:18px;line-height:1.4}
-
 .ios-content{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:flex-start;margin-bottom:16px}
 .ios-steps{display:flex;flex-direction:column;gap:0}
 .ios-step{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -222,13 +219,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .ios-step-text b{color:#fff;font-weight:600}
 .ios-icon-inline{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:16px;height:16px;border-radius:4px;background:rgba(255,255,255,.12);margin:0 2px;padding:2px}
 .ios-icon-inline svg{width:11px;height:11px}
-
 .ios-video{border-radius:14px;overflow:hidden;background:#000;aspect-ratio:9/16;max-height:340px;box-shadow:0 12px 32px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);position:relative}
 .ios-video video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
-
 .ios-close{width:100%;margin-top:6px;height:48px;border-radius:14px;background:#fff;color:#000;border:none;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;transition:.15s}
 .ios-close:active{transform:scale(.97)}
-
 @media(max-width:420px){
   .ios-content{gap:10px}
   .ios-step-text{font-size:11px}
@@ -386,8 +380,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </footer>
 </div>
 
-<div id="ytHidden"><div id="ytPlayer"></div></div>
-
 <div class="fp" id="fp">
   <div class="fp-bg" id="fpBg"></div>
   <div class="fp-head">
@@ -413,7 +405,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </div>
     </div>
-    <div class="fp-video-wrap" id="fpVideoWrap"></div>
+    <div class="fp-video-wrap" id="fpVideoWrap">
+      <div id="ytHidden"><div id="ytPlayer"></div></div>
+    </div>
     <div class="fp-info">
       <div class="fp-title-row">
         <div class="fp-title-wrap"><div class="fp-title" id="fpTitle">Aucun titre</div></div>
@@ -609,7 +603,7 @@ var S={
   sortMode:{},colorCache:{},recCache:{},
   showVideo:false
 };
-var LS='2am:v16';
+var LS='2am:v17';
 var audio=new Audio();
 audio.preload='metadata';
 
@@ -823,7 +817,7 @@ function updateAdUI(){
     $('#fpLogoOverlay').classList.add('hidden');
     $('#fpArt').classList.remove('clickable');
     $('#fp').classList.remove('show-video');
-    updateVideoPosition(false);
+    S.showVideo=false;
     document.title='2AM';
     if(!b){b=document.createElement('div');b.className='fp-ad-badge';b.textContent='PUBLICITÉ';$('#fp').appendChild(b);}
   }else{
@@ -872,35 +866,6 @@ function updateBottomPlayerVisibility(){
   if(show)p.classList.add('visible');else p.classList.remove('visible');
 }
 
-/* ===== Video positioning ===== */
-function updateVideoPosition(active){
-  var container=document.getElementById('ytHidden');
-  if(!container)return;
-  if(active){
-    var wrap=$('#fpVideoWrap');
-    if(!wrap)return;
-    var rect=wrap.getBoundingClientRect();
-    container.style.top=rect.top+'px';
-    container.style.left=rect.left+'px';
-    container.style.width=rect.width+'px';
-    container.style.height=rect.height+'px';
-    container.style.borderRadius='16px';
-    container.style.opacity='1';
-    container.classList.add('as-video');
-  }else{
-    container.style.top='-9999px';
-    container.style.left='-9999px';
-    container.style.width='400px';
-    container.style.height='225px';
-    container.style.borderRadius='0';
-    container.style.opacity='0';
-    container.classList.remove('as-video');
-  }
-}
-window.addEventListener('resize',function(){
-  if(S.showVideo&&S.fullscreenOpen)setTimeout(function(){updateVideoPosition(true);},100);
-});
-
 /* ===== Logo fade ===== */
 var logoTimeout=null;
 function triggerLogoFade(){
@@ -948,15 +913,10 @@ function updateVideoVisibility(){
   $('#fp').classList.toggle('show-video',show);
   var art=$('#fpArt');
   if(canShowVideo())art.classList.add('clickable');else art.classList.remove('clickable');
-  if(show){
-    setTimeout(function(){updateVideoPosition(true);},50);
-  }else{
-    updateVideoPosition(false);
-  }
 }
 
 /* ===== Preview Player ===== */
-var previewPlayer=null,previewReady=false,previewRingTimer=null,previewCurrentId=null,previewStartTime=0,previewSeekTo=0;
+var previewPlayer=null,previewReady=false,previewRingTimer=null,previewCurrentId=null;
 var previewPreviewTimer=null;
 
 function ensurePreviewPlayer(){
@@ -1026,7 +986,6 @@ function startPreview(item,artEl){
       var seek=d*0.3;
       try{p.seekTo(seek,true);}catch(e){}
       try{p.playVideo();}catch(e){}
-      previewStartTime=Date.now();
       startRing(artEl,30000);
       previewPreviewTimer=setTimeout(function(){
         if(previewCurrentId===item.ytId)stopPreview();
@@ -1710,9 +1669,7 @@ function addTrending(i){
   S.pendingTrack=track;openPlaylistPicker('Ajouter à une playlist…');
 }
 
-/* ===== Search ===== */
 var searchModal=$('#searchModal');
-var lastResults=[];
 $('#openSearch').onclick=function(){searchModal.classList.add('open');setTimeout(function(){$('#ytInput').focus();},250);};
 $('#closeSearchModal').onclick=function(){stopPreview();searchModal.classList.remove('open');};
 searchModal.addEventListener('click',function(e){if(e.target===searchModal){stopPreview();searchModal.classList.remove('open');}});
@@ -1729,7 +1686,6 @@ function runSearch(q){
   if(!q){el.innerHTML='';return;}
   el.innerHTML='<div class="search-msg">Recherche…</div>';
   searchOnline(q).then(function(results){
-    lastResults=results;
     if(!results.length){el.innerHTML='<div class="search-msg">Aucun résultat</div>';return;}
     var html='';
     results.forEach(function(r,i){
@@ -1782,7 +1738,6 @@ function runSearch(q){
   });
 }
 
-/* ===== Playlist picker ===== */
 var picker=$('#playlistPicker');
 function pickerListHTML(){
   var html='<div class="picker-item liked-item" data-pick="liked">'+
@@ -1868,7 +1823,6 @@ $('#newPlName').addEventListener('keydown',function(e){
 });
 picker.addEventListener('click',function(e){if(e.target===picker){picker.classList.remove('open');S.pendingTrack=null;}});
 
-/* ===== Options ===== */
 $('#fpOptions').onclick=function(){
   if(S.cur<0)return;
   var t=S.tracks[S.cur];
@@ -1928,7 +1882,6 @@ $('#trackOptions').addEventListener('click',function(e){
   }
 });
 
-/* ===== Edit Track ===== */
 var editTrackModal=$('#editTrackModal');
 function openEditTrack(idx){
   var t=S.tracks[idx];if(!t)return;
@@ -1951,7 +1904,6 @@ $('#etSave').onclick=function(){
   toast('Titre modifié');closeEditTrack();
 };
 
-/* ===== Playlist edit ===== */
 var editPlModal=$('#editPlModal');
 function openNewPlaylist(){
   S.editingPlId=null;S.editingPlIsNew=true;
@@ -2002,7 +1954,6 @@ $('#epDelete').onclick=function(){
   toast('Playlist supprimée');
 };
 
-/* ===== Import ===== */
 var importModal=$('#importModal');
 function openImport(){importModal.classList.add('open');}
 function closeImport(){importModal.classList.remove('open');}
@@ -2019,7 +1970,6 @@ dz.addEventListener('drop',function(e){if(e.dataTransfer.files.length)importFile
 window.addEventListener('dragover',function(e){e.preventDefault();});
 window.addEventListener('drop',function(e){if(e.dataTransfer.files.length&&!importModal.classList.contains('open')){e.preventDefault();importFiles(e.dataTransfer.files);}});
 
-/* ===== Fullscreen buttons ===== */
 $('#fpMinimize').onclick=closeFullscreen;
 $('#pExpand').onclick=openFullscreen;
 var playerMain=document.querySelector('.player-main');
@@ -2027,7 +1977,6 @@ if(playerMain)playerMain.addEventListener('click',function(e){if(!e.target.close
 $('#fpArt').addEventListener('click',function(e){e.stopPropagation();toggleVideo();});
 $('#fpBackToArt').addEventListener('click',function(e){e.stopPropagation();S.showVideo=false;updateVideoVisibility();});
 
-/* ===== Controls ===== */
 $('#pPlay').addEventListener('click',toggle);
 $('#pLike').addEventListener('click',toggleLikeCurrent);
 $('#fpLike').addEventListener('click',toggleLikeCurrent);
@@ -2059,14 +2008,10 @@ window.addEventListener('resize',function(){
   resizeTimer=setTimeout(function(){
     applyMarquee($('#pTitle'));
     applyMarquee($('#fpTitle'));
-    if(S.showVideo&&S.fullscreenOpen)updateVideoPosition(true);
   },200);
 });
 
-/* ===== iOS Install Modal ===== */
-function isIOS(){
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-}
+function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;}
 function isStandalone(){
   if(window.navigator.standalone===true)return true;
   if(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)return true;
@@ -2095,7 +2040,6 @@ function showIosInstallModal(){
   }
 }
 
-/* ===== Init ===== */
 (function init(){
   try{document.getElementById('viewHome').innerHTML='<div class="loading-text" style="padding:80px 20px">Chargement…</div>';}catch(e){}
   try{
