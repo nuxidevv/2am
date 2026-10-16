@@ -324,12 +324,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   } catch(e) { console.warn('audioSession declaration failed', e); }
 })();
 
-/* ============================================================
-   SOLUTION ULTIME BACKGROUND AUDIO
-   - Fichier WAV silencieux joué en boucle pour maintenir
-     la session audio active même quand iOS veut suspendre
-   - Wake Lock pour empêcher l'écran de s'éteindre
-   ============================================================ */
 (function backgroundKeepAlive(){
   function createSilentWavURL(){
     try{
@@ -640,7 +634,7 @@ var S={
   sortMode:{},colorCache:{},recCache:{},
   showVideo:false
 };
-var LS='2am:v20';
+var LS='2am:v21';
 var audio=new Audio();audio.preload='metadata';
 var trendingStatus='idle';
 var trendingError='';
@@ -950,11 +944,14 @@ function playTrack(idxOrTrack,opts){
   stopPoll();
   try{audio.pause();}catch(e){}
   try{if(ytPlayer&&ytPlayer.pauseVideo)ytPlayer.pauseVideo();}catch(e){}
-  triggerLogoFade();
-  if(window.__keepAliveStart)window.__keepAliveStart();
+
+  // 1. LANCER LE SON PRINCIPAL EN PREMIER (consomme le geste iOS)
   if(t.type==='yt'){
     try{audio.removeAttribute('src');audio.load();}catch(e){}
-    ytLoad(t.ytId);S.playing=true;updatePlayIcon();renderCurrentView();
+    ytLoad(t.ytId);
+    S.playing=true;
+    updatePlayIcon();
+    renderCurrentView();
   }else{
     audio.src=t.src;
     if(navigator.audioSession){try{navigator.audioSession.type='playback';}catch(e){}}
@@ -969,7 +966,20 @@ function playTrack(idxOrTrack,opts){
       S.playing=true;updatePlayIcon();renderCurrentView();
     }
   }
+
+  // 2. Effets visuels
+  triggerLogoFade();
+
+  // 3. Son silencieux DÉCALÉ de 300ms (après que le son principal joue)
+  setTimeout(function(){
+    if(window.__keepAliveStart)window.__keepAliveStart();
+  },300);
+
+  // 4. Plein écran
   openFullscreen();
+
+  // 5. Forcer l'icône au bon état après un court délai
+  setTimeout(function(){updatePlayIcon();},150);
 }
 function toggle(){
   if(S.cur<0){if(S.tracks.length)playTrack(0);return;}
@@ -1056,6 +1066,7 @@ audio.addEventListener('timeupdate',function(){
 audio.addEventListener('loadedmetadata',function(){var t=S.tracks[S.cur];if(t&&t.type==='file'&&!t.duration&&isFinite(audio.duration)){t.duration=audio.duration;save();}});
 audio.addEventListener('ended',function(){nextTrack(true);});
 audio.addEventListener('play',function(){S.playing=true;updatePlayIcon();if(S.fullscreenOpen)$('#fp').classList.add('playing');});
+audio.addEventListener('playing',function(){S.playing=true;updatePlayIcon();if(S.fullscreenOpen)$('#fp').classList.add('playing');});
 audio.addEventListener('pause',function(){
   if(document.hidden)return;
   if(S.cur>=0&&S.tracks[S.cur]&&S.tracks[S.cur].type==='file'){
