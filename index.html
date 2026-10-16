@@ -309,6 +309,31 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 </head>
 <body>
 
+<script>
+/* ============================================================
+   DÉCLARATION : 2AM est une application de lecture multimédia
+   Cette ligne indique à iOS que l'app doit continuer à jouer
+   du son même en arrière-plan. iOS 16.4+ uniquement.
+   ============================================================ */
+(function declareMediaApp(){
+  try {
+    // API moderne (iOS 16.4+) : déclare la session audio comme "playback"
+    if (navigator.audioSession) {
+      navigator.audioSession.type = 'playback';
+    }
+    // Fallback pour les anciennes versions d'iOS via Media Session
+    if ('mediaSession' in navigator) {
+      // Force le type de session à playback dès le chargement
+      try { navigator.mediaSession.playbackState = 'none'; } catch(e) {}
+    }
+    // Astuce supplémentaire : certains navigateurs respectent ce hint
+    if (document.documentElement) {
+      document.documentElement.setAttribute('data-audio-session', 'playback');
+    }
+  } catch(e) { console.warn('audioSession declaration failed', e); }
+})();
+</script>
+
 <div class="app">
   <header class="header">
     <img src="/IMG_0824.png" alt="2AM" class="logo">
@@ -529,69 +554,6 @@ function cleanTitle(t){
   return r||t;
 }
 
-/* ===== SILENT AUDIO ===== */
-function createSilentWavURL(){
-  try{
-    var sampleRate=8000,duration=2,numSamples=sampleRate*duration;
-    var buffer=new ArrayBuffer(44+numSamples);
-    var view=new DataView(buffer);
-    function ws(o,s){for(var i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i));}
-    ws(0,'RIFF');view.setUint32(4,36+numSamples,true);ws(8,'WAVE');ws(12,'fmt ');
-    view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);
-    view.setUint32(24,sampleRate,true);view.setUint32(28,sampleRate,true);
-    view.setUint16(32,1,true);view.setUint16(34,8,true);
-    ws(36,'data');view.setUint32(40,numSamples,true);
-    for(var j=0;j<numSamples;j++)view.setUint8(44+j,128);
-    var blob=new Blob([buffer],{type:'audio/wav'});
-    return URL.createObjectURL(blob);
-  }catch(e){return null;}
-}
-
-var silentAudio=null;
-var silentAudioURL=null;
-function initSilentAudio(){
-  if(silentAudio)return;
-  silentAudioURL=createSilentWavURL();
-  if(!silentAudioURL)return;
-  silentAudio=new Audio();
-  silentAudio.src=silentAudioURL;
-  silentAudio.loop=true;
-  silentAudio.volume=0.001;
-  silentAudio.preload='auto';
-}
-function startSilentAudio(){
-  initSilentAudio();
-  if(!silentAudio)return;
-  try{
-    silentAudio.currentTime=0;
-    var p=silentAudio.play();
-    if(p&&p.catch)p.catch(function(){});
-  }catch(e){}
-}
-function stopSilentAudio(){
-  if(!silentAudio)return;
-  try{silentAudio.pause();}catch(e){}
-}
-
-/* ===== WAKE LOCK ===== */
-var wakeLock=null;
-var wakeLockSupported=('wakeLock' in navigator);
-function requestWakeLock(){
-  if(!wakeLockSupported)return;
-  if(wakeLock)return;
-  try{
-    navigator.wakeLock.request('screen').then(function(lock){
-      wakeLock=lock;
-      lock.addEventListener('release',function(){wakeLock=null;});
-    }).catch(function(e){});
-  }catch(e){}
-}
-function releaseWakeLock(){
-  if(!wakeLock)return;
-  try{wakeLock.release().then(function(){wakeLock=null;}).catch(function(){});}catch(e){}
-}
-
-/* ===== IndexedDB ===== */
 var DB=(function(){
   var p=null;
   function open(){
@@ -731,7 +693,6 @@ function loadRecommendations(seedTitle){
   return fetchOnline({q:seedTitle}).then(function(d){var r=(d.items||[]).map(normalize).filter(Boolean).slice(0,10);S.recCache[key]=r;return r;}).catch(function(){return [];});
 }
 
-/* ===== YT Player ===== */
 var ytPlayer=null,ytReady=false,ytPending=null,ytPollTimer=null,adPollTimer=null;
 window.onYouTubeIframeAPIReady=function(){
   try{
@@ -839,7 +800,6 @@ function updateVideoVisibility(){
   if(canShowVideo())art.classList.add('clickable');else art.classList.remove('clickable');
 }
 
-/* ===== Preview ===== */
 var previewPlayer=null,previewReady=false,previewRingTimer=null,previewCurrentId=null,previewPreviewTimer=null;
 function ensurePreviewPlayer(){
   return new Promise(function(resolve){
@@ -907,7 +867,6 @@ function startRing(artEl,duration){
   },80);
 }
 
-/* ===== Playback ===== */
 function getPool(){
   if(S.queue&&S.queue.length){return S.queue.map(function(id){return S.tracks.find(function(t){return t.id===id;});}).filter(Boolean);}
   return S.tracks.slice();
@@ -926,9 +885,6 @@ function playTrack(idxOrTrack,opts){
   try{audio.pause();}catch(e){}
   try{if(ytPlayer&&ytPlayer.pauseVideo)ytPlayer.pauseVideo();}catch(e){}
   triggerLogoFade();
-  // Background tricks
-  startSilentAudio();
-  requestWakeLock();
   if(t.type==='yt'){
     try{audio.removeAttribute('src');audio.load();}catch(e){}
     ytLoad(t.ytId);S.playing=true;updatePlayIcon();renderCurrentView();
@@ -950,8 +906,6 @@ function toggle(){
     if(audio.paused){audio.play().then(function(){S.playing=true;updatePlayIcon();renderPlayer();}).catch(function(){toast('Lecture impossible');});}
     else{audio.pause();S.playing=false;}
   }
-  if(S.playing){startSilentAudio();requestWakeLock();}
-  else{stopSilentAudio();releaseWakeLock();}
   updatePlayIcon();
   if(S.playing)$('#fp').classList.add('playing');else $('#fp').classList.remove('playing');
   renderPlayer();
@@ -1009,7 +963,6 @@ function deleteTrack(idx){
     try{audio.pause();audio.removeAttribute('src');audio.load();}catch(e){}
     try{if(ytPlayer&&ytPlayer.stopVideo)ytPlayer.stopVideo();}catch(e){}
     stopPoll();stopAdPoll();
-    stopSilentAudio();releaseWakeLock();
     S.cur=-1;S.playing=false;closeFullscreen();updatePlayIcon();
   }else if(S.cur>idx)S.cur--;
   save();renderCurrentView();toast('Titre supprimé');
@@ -1025,13 +978,7 @@ audio.addEventListener('ended',function(){nextTrack(true);});
 audio.addEventListener('play',function(){S.playing=true;updatePlayIcon();if(S.fullscreenOpen)$('#fp').classList.add('playing');});
 audio.addEventListener('pause',function(){
   if(S.cur>=0&&S.tracks[S.cur]&&S.tracks[S.cur].type==='file'){
-    // Only mark paused if we're not transitioning between tracks
-    setTimeout(function(){
-      if(audio.paused&&S.cur>=0){
-        S.playing=false;updatePlayIcon();$('#fp').classList.remove('playing');
-        stopSilentAudio();releaseWakeLock();
-      }
-    },100);
+    S.playing=false;updatePlayIcon();$('#fp').classList.remove('playing');
   }
 });
 
@@ -1042,8 +989,6 @@ document.addEventListener('visibilitychange',function(){
     if(t&&t.type==='file'&&audio.paused){
       audio.play().catch(function(){});
     }
-    startSilentAudio();
-    requestWakeLock();
   }
 });
 
@@ -1299,10 +1244,7 @@ $('#content').addEventListener('click',function(e){
   var trendPlay=e.target.closest('[data-trendplay]');
   var trendCard=e.target.closest('[data-trend]');
   if((trendCard||trendPlay)&&cardClickLock)return;
-  if(trendCard||trendPlay){
-    cardClickLock=true;
-    setTimeout(function(){cardClickLock=false;},400);
-  }
+  if(trendCard||trendPlay){cardClickLock=true;setTimeout(function(){cardClickLock=false;},400);}
   if(trendPlay){e.stopPropagation();playTrending(parseInt(trendPlay.dataset.trendplay,10));return;}
   if(trendCard){addTrending(parseInt(trendCard.dataset.trend,10));return;}
   var likedEntry=e.target.closest('[data-liked]');if(likedEntry){setView('playlist','liked');return;}
@@ -1496,21 +1438,12 @@ function showIosInstallModal(){
 (function init(){
   try{document.getElementById('viewHome').innerHTML='<div class="loading-text" style="padding:80px 20px">Chargement…</div>';}catch(e){}
   try{updatePlayIcon();var v=parseFloat(localStorage.getItem('2am:vol'));if(!isNaN(v)){S.vol=v;audio.volume=v;}}catch(e){}
-  initSilentAudio();
   loadYTAPI();
   restore().then(function(){
     try{setView('home');}
     catch(e){console.error('render error',e);document.getElementById('viewHome').innerHTML='<div class="empty" style="padding:80px 20px"><div class="empty-title">Erreur au démarrage</div><div class="empty-sub">'+esc(e.message||'Erreur inconnue')+'</div></div>';}
   }).catch(function(e){console.error('restore error',e);try{setView('home');}catch(_){}});
   if(isIOS()&&!isStandalone()){setTimeout(showIosInstallModal,800);}
-  // Try to request wake lock on first user interaction
-  var firstInteraction=function(){
-    document.removeEventListener('touchstart',firstInteraction);
-    document.removeEventListener('click',firstInteraction);
-    if(S.playing)requestWakeLock();
-  };
-  document.addEventListener('touchstart',firstInteraction,{passive:true});
-  document.addEventListener('click',firstInteraction);
 })();
 
 })();
