@@ -267,15 +267,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .mb-logo{height:72px;width:auto;max-width:180px;object-fit:contain;filter:brightness(1.1);margin-bottom:4px}
 .mb-title{font-size:34px;font-weight:800;letter-spacing:-.9px;background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.6) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:2px}
 .mb-desc{font-size:15px;line-height:1.55;color:rgba(255,255,255,.72);max-width:320px;margin-bottom:4px}
-.mb-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);margin-top:8px}
-.mb-badge svg{width:14px;height:14px;flex-shrink:0;color:#fff;opacity:.75}
-.mb-badge span{font-size:12px;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:.2px}
 .mb-note{display:flex;align-items:center;gap:12px;padding:16px 18px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(20px);margin:12px 0 4px;width:100%;max-width:320px}
 .mb-note svg{width:20px;height:20px;flex-shrink:0;color:#fff;opacity:.65}
 .mb-note-text{text-align:left;font-size:13px;line-height:1.45;color:rgba(255,255,255,.9)}
 .mb-note-text b{color:#fff;font-weight:700}
-.mb-os{font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.5;margin-top:14px;letter-spacing:.2px}
-.mb-os b{color:rgba(255,255,255,.7);font-weight:600}
 .mb-hint{font-size:12px;color:rgba(255,255,255,.35);line-height:1.5;margin-top:2px}
 .mb-hint b{color:rgba(255,255,255,.65);font-weight:600}
 
@@ -292,10 +287,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     <img src="/IMG_0838.png" alt="2AM" class="mb-logo">
     <h1 class="mb-title">2AM</h1>
     <p class="mb-desc">Toute ta musique. Un seul endroit. Importe tes sons, crée des playlists, écoute sans limite ni publicité.</p>
-    <div class="mb-badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L3 7l9 5 9-5-9-5zM3 17l9 5 9-5M3 12l9 5 9-5"/></svg>
-      <span>Meilleur que Spotify</span>
-    </div>
     <div class="mb-note">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
       <div class="mb-note-text">
@@ -303,7 +294,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         Windows, macOS et Linux
       </div>
     </div>
-    <p class="mb-os">Appareil détecté : <b id="mbOS">Mobile</b></p>
     <p class="mb-hint">Ouvre <b>2am.vercel.app</b> depuis ton ordinateur pour profiter de l'expérience complète.</p>
   </div>
 </div>
@@ -487,37 +477,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 'use strict';
 
 /* ============================================================
-   DÉTECTION MOBILE ROBUSTE
-   - Utilise les media queries pointer/hover (impossible à falsifier
-     en activant la "version bureau" dans Safari)
-   - Détecte aussi maxTouchPoints comme filet de sécurité
+   DÉTECTION MOBILE
+   Utilise les media queries pointer/hover (impossibles à falsifier
+   via "Version pour ordinateur" dans Safari)
    ============================================================ */
 var isCoarsePointer=window.matchMedia&&window.matchMedia('(pointer: coarse)').matches;
 var isNoHover=window.matchMedia&&window.matchMedia('(hover: none)').matches;
 var hasTouch=(navigator.maxTouchPoints>0)||('ontouchstart' in window);
 var isMobile=isCoarsePointer&&isNoHover&&hasTouch;
 
-function detectOS(){
-  var ua=navigator.userAgent||'';
-  if(/iPhone|iPod/i.test(ua))return 'iOS';
-  if(/iPad/i.test(ua))return 'iPadOS';
-  if(/Android/i.test(ua))return 'Android';
-  if(/Windows/i.test(ua))return 'Windows';
-  if(/Macintosh|Mac OS X/i.test(ua))return 'macOS';
-  if(/CrOS/i.test(ua))return 'ChromeOS';
-  if(/Linux/i.test(ua))return 'Linux';
-  return 'système inconnu';
-}
-
 if(isMobile){
   var blockEl=document.getElementById('mobileBlock');
   var appEl=document.querySelector('.app');
   var fpEl=document.getElementById('fp');
-  var osEl=document.getElementById('mbOS');
   if(blockEl)blockEl.classList.add('active');
   if(appEl)appEl.style.display='none';
   if(fpEl)fpEl.style.display='none';
-  if(osEl)osEl.textContent=detectOS();
   return;
 }
 
