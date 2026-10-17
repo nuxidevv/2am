@@ -123,7 +123,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .progress-line{flex:1;height:4px;background:rgba(255,255,255,.15);border-radius:2px;cursor:pointer;position:relative}
 .progress-fill{height:100%;background:#fff;border-radius:2px;width:0%;transition:width .1s linear}
 
-/* FULLSCREEN PLAYER (CORRIGÉ) */
+/* FULLSCREEN PLAYER */
 .fp{position:fixed;inset:0;background:#000;z-index:300;display:flex;flex-direction:column;padding:calc(20px + var(--sa-top)) 24px calc(32px + var(--sa-bottom));transform:translateY(100%);transition:transform .5s cubic-bezier(.2,.9,.3,1);overflow:hidden;visibility:hidden}
 .fp.open{transform:translateY(0);visibility:visible}
 .fp::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 20%,rgba(255,255,255,.08),transparent 60%);pointer-events:none;z-index:0}
@@ -133,7 +133,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .fp-head-right{display:flex;gap:8px;align-items:center}
 .fp-back-btn{display:none}
 .fp.show-video .fp-back-btn{display:flex}
-
 .fp-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;position:relative;z-index:1;min-height:0;padding:12px 0}
 
 /* L'image de base */
@@ -290,9 +289,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 </head>
 <body>
 
+<!-- BANDEAU D'ERREUR (Caché par défaut) -->
+<div id="globalError" style="display:none;position:fixed;top:0;left:0;right:0;background:#ff375f;color:#fff;padding:10px;z-index:9999;font-size:12px;text-align:center;font-weight:bold;"></div>
+
 <div class="app">
   <header class="header">
-    <img src="/IMG_0838.png" alt="2AM" class="logo">
+    <img src="/IMG_0838.png" alt="2AM" class="logo" onerror="this.style.display='none'">
     <div class="header-actions">
       <button class="icon-btn" id="openSearch" title="Rechercher">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -310,7 +312,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 
   <main class="content" id="content">
-    <div id="viewHome"></div>
+    <div id="viewHome">
+      <div style="padding:80px 20px;text-align:center;color:var(--dim2);font-weight:600;">Chargement de l'application...</div>
+    </div>
     <div id="viewLibrary" style="display:none"></div>
     <div id="viewSettings" style="display:none">
       <h2 class="section-title" style="margin-bottom:20px">Paramètres</h2>
@@ -369,7 +373,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     <button class="icon-btn" id="fpMinimize" title="Minimiser">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
     </button>
-    <img src="/IMG_0838.png" alt="2AM" class="fp-logo">
+    <img src="/IMG_0838.png" alt="2AM" class="fp-logo" onerror="this.style.display='none'">
     <div class="fp-head-right">
       <button class="icon-btn fp-back-btn" id="fpBackToArt" title="Image">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -383,7 +387,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     <div class="fp-video-wrap" id="fpVideoWrap"></div>
     <div class="fp-art" id="fpArt">
       <img class="cover" id="fpCover" alt="">
-      <div class="logo-overlay" id="fpLogoOverlay"><img src="/IMG_0838.png" alt="2AM"></div>
+      <div class="logo-overlay" id="fpLogoOverlay"><img src="/IMG_0838.png" alt="2AM" onerror="this.style.display='none'"></div>
       <div class="fp-art-hint"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
     </div>
     <div class="fp-info">
@@ -409,7 +413,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   </div>
 </div>
 
-<!-- MODALS (Import, Search, Edit, Pickers) -->
+<!-- MODALS -->
 <div class="modal" id="importModal">
   <div class="modal-card">
     <div class="modal-handle"></div>
@@ -484,13 +488,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 <div class="toast" id="toast"></div>
 
 <script>
+// CAPTEUR D'ERREUR GLOBAL
+window.onerror = function(msg, url, line, col, error) {
+  var errDiv = document.getElementById('globalError');
+  if(errDiv) {
+    errDiv.style.display = 'block';
+    errDiv.textContent = 'Erreur JS: ' + msg + ' (Ligne ' + line + ')';
+  }
+  return false;
+};
+
 (function(){
 'use strict';
 
 function $(s){return document.querySelector(s);}
 function $$(s){return document.querySelectorAll(s);}
 
-// CORRECTION : Fonction pour décoder les entités HTML comme &#39;
 function unescapeHtml(str){
   if(!str) return '';
   return str.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
@@ -503,7 +516,7 @@ function uid(){return Math.random().toString(36).slice(2,10)+Date.now().toString
 function cleanTitle(t){
   if(!t)return '';
   var r=t.replace(/\s*[\(\[]\s*(clip\s*officiel|official\s*(music\s*)?video|official\s*audio|lyric\s*video|lyrics?|audio\s*only|audio|hd|hq|4k|mv|m\/v)\s*[\)\]]/gi,'').replace(/\s*[\(\[]\s*(clip|video|vidéo)\s*(officiel|officielle|official)?\s*[\)\]]/gi,'').replace(/\s{2,}/g,' ').trim();
-  return unescapeHtml(r||t); // Application de unescapeHtml ici
+  return unescapeHtml(r||t);
 }
 
 var DB=(function(){
@@ -622,10 +635,11 @@ function importFiles(files){
   });
   Promise.all(promises).then(function(){save();renderCurrentView();toast(list.length+(list.length>1?' titres importés':' titre importé'));closeImport();});
 }
+
 function fetchOnline(params){
   var qs=new URLSearchParams(params).toString();
-  // Appel de l'API (assure-toi que le fichier dans /api/ s'appelle bien youtube.js)
-  return fetch('/api/youtube?'+qs).then(function(r){
+  // MODIFICATION ICI : On utilise /api/search comme demandé
+  return fetch('/api/search?'+qs).then(function(r){
     if(!r.ok){return r.json().catch(function(){return {};}).then(function(e){throw new Error(e.error||('Erreur API ('+r.status+')'));});}
     return r.json();
   });
@@ -715,7 +729,6 @@ var playIcon='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7
 var pauseIcon='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
 var heartOutline='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
 var heartFilled='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
-// NOUVEAU LOGO PLAYLIST PROPRE
 var noteSvg='<svg class="placeholder" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>';
 
 function updatePlayIcon(){
@@ -974,10 +987,7 @@ function trackRowHTML(t,opts){
   var draggable=opts.draggable?'draggable="true"':'';
   var dragHandle=opts.draggable?'<div class="drag-handle" style="padding:0 8px;color:var(--dim2);cursor:grab"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg></div>':'';
   var removeBtn=opts.fromPlaylist?'<button class="track-action" data-removefrom="'+opts.fromPlaylist+'" data-trackid="'+t.id+'" title="Retirer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 6L6 18M6 6l12 12"/></svg></button>':'';
-  
-  // CORRECTION : Ajout de la classe 'liked' pour le dégradé
   var likedClass = liked ? ' liked' : '';
-  
   return '<div class="track'+likedClass+(active?' active':'')+'" data-idx="'+idx+'" '+draggable+'>'+dragHandle+
     '<div class="track-art">'+art+'</div>'+
     '<div class="track-info"><div class="track-title">'+esc(t.title)+'</div><div class="track-artist">'+esc(t.artist)+'</div></div>'+
@@ -1002,7 +1012,6 @@ function renderCurrentView(){
   if(S.view==='home')renderHome();
   else if(S.view==='library')renderLibrary();
   else if(S.view==='playlist')renderPlaylistView();
-  // Paramètres gérés par le HTML statique
   renderFullscreen();updateLikeUI();updateBottomPlayerVisibility();
 }
 function setView(v,plId){
@@ -1026,12 +1035,11 @@ function renderHome(){
   var region=S.trendingRegion||userRegion();
   var html = '';
 
-  // 1. SECTION : ÉCOUTES RÉCENTES (Dans une seule Card)
+  // 1. SECTION : ÉCOUTES RÉCENTES
   if(S.history.length > 0){
     html += '<div class="recent-card">';
     html += '<h2 class="section-title">Écoutes récentes</h2>';
     html += '<div class="recent-list">';
-    // On affiche les 5 dernières écoutes uniques
     var recentTracks = S.history.slice(0, 5);
     recentTracks.forEach(function(t){
       var idx = S.tracks.indexOf(t);
@@ -1041,7 +1049,7 @@ function renderHome(){
     html += '</div></div>';
   }
 
-  // 2. SECTION : RECOMMANDÉ POUR VOUS (Basé sur le dernier son écouté)
+  // 2. SECTION : RECOMMANDÉ POUR VOUS
   if(recsStatus === 'idle' && S.history.length > 0){
     recsStatus = 'loading';
     var seed = S.history[0].artist + ' ' + S.history[0].title;
@@ -1103,7 +1111,6 @@ function renderHome(){
     });
   }
 
-  // Réattacher les événements pour la liste récente
   el.querySelectorAll('.track').forEach(function(row){
     row.addEventListener('click',function(e){
       var like=e.target.closest('[data-like]');if(like){e.stopPropagation();toggleLikeByIdx(parseInt(like.dataset.like,10));return;}
@@ -1138,7 +1145,6 @@ function renderLibrary(){
   if(S.playlists.length){
     S.playlists.forEach(function(p){
       var cover=p.trackIds.length?S.tracks.find(function(t){return t.id===p.trackIds[0];}):null;
-      // Utilisation de la nouvelle icône propre noteSvg
       var iconContent=(cover&&cover.thumb)?'<img src="'+esc(cover.thumb)+'" alt="" crossorigin="anonymous">':noteSvg;
       html+='<button class="entry-row" data-plid="'+p.id+'" data-plrow="'+p.id+'"><div class="entry-icon" data-pl-icon="'+p.id+'">'+iconContent+'</div><div class="entry-info"><div class="t">'+esc(p.name)+'</div><div class="s">'+p.trackIds.length+' titre'+(p.trackIds.length>1?'s':'')+'</div></div><svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>';
     });
@@ -1428,10 +1434,10 @@ $('#trackOptions').addEventListener('click',function(e){
       var ex=S.tracks.find(function(t){return t.ytId===pt.ytId;});
       if(!ex){ex={id:uid(),title:pt.title,artist:pt.artist,type:'yt',ytId:pt.ytId,thumb:pt.thumb,duration:0,src:'https://www.youtube.com/watch?v='+pt.ytId,_temp:true};S.tracks.push(ex);}
       playTrack(ex,{queue:null,context:null});S.pendingTrack=null;
-    }else if(trendAct==render='like'){
-      var pt2=S.pendingTrack;Playif(!pt2)return;
-      var ex2list=S.tracks.find(function(t){Viewreturn t.ytId===pt2.ytId;();});
-      if(!ex2){ex2={elseid:uid(),title:pt2.title,artist:pt2.artist,type:'yt',ytId:pt2.ytId,thumb:pt2.thumb,duration:0,src:'https://www.youtube.com/watch?v='+pt2.ytId};S.tracks.push(ex2);}
+    }else if(trendAct==='like'){
+      var pt2=S.pendingTrack;if(!pt2)return;
+      var ex2=S.tracks.find(function(t){return t.ytId===pt2.ytId;});
+      if(!ex2){ex2={id:uid(),title:pt2.title,artist:pt2.artist,type:'yt',ytId:pt2.ytId,thumb:pt2.thumb,duration:0,src:'https://www.youtube.com/watch?v='+pt2.ytId};S.tracks.push(ex2);}
       if(ex2._temp)delete ex2._temp;
       if(S.liked.indexOf(ex2.id)<0)S.liked.push(ex2.id);
       save();updateLikeUI();renderCurrentView();toast('Ajouté aux titres aimés');S.pendingTrack=null;
@@ -1449,7 +1455,7 @@ $('#trackOptions').addEventListener('click',function(e){
     if(S.playlistContext==='liked'){S.liked=S.liked.filter(function(id){return id!==t.id;});toast('Retiré des titres aimés');}
     else if(S.playlistContext){var pl=S.playlists.find(function(x){return x.id===S.playlistContext;});if(pl){pl.trackIds=pl.trackIds.filter(function(id){return id!==t.id;});toast('Retiré de la playlist');}}
     save();updateLikeUI();
-    if(S.view==='playlist') renderCurrentView();
+    if(S.view==='playlist')renderPlaylistView();else renderCurrentView();
   }
 });
 
@@ -1520,7 +1526,6 @@ var resizeTimer;
 window.addEventListener('resize',function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(function(){applyMarquee($('#pTitle'));applyMarquee($('#fpTitle'));},200);});
 
 (function init(){
-  try{document.getElementById('viewHome').innerHTML='<div style="padding:80px 20px;text-align:center;color:var(--dim2)">Chargement…</div>';}catch(e){}
   try{updatePlayIcon();var v=parseFloat(localStorage.getItem('2am:vol'));if(!isNaN(v)){S.vol=v;audio.volume=v;}}catch(e){}
   loadYTAPI();
   restore().then(function(){
