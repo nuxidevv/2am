@@ -1,25 +1,72 @@
 export default async function handler(req, res) {
-  const { q, region, max } = req.query;
-  const KEY = process.env.YOUTUBE_API_KEY;
-  if (!KEY) return res.status(500).json({ error: 'YOUTUBE_API_KEY manquante sur Vercel' });
+  // Autoriser les requêtes depuis ton site (CORS)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const n = Math.min(Math.max(parseInt(max, 10) || 25, 1), 50);
-  let url;
-  if (q) {
-    url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&videoEmbeddable=true&maxResults=${n}&q=${encodeURIComponent(q)}&key=${KEY}`;
-  } else {
-    const r = (region || 'FR').toUpperCase().slice(0, 2);
-    url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&videoCategoryId=10&regionCode=${r}&maxResults=${max ? n : 20}&key=${KEY}`;
-  }
+  const { q } = req.query;
+  if (!q) return res.status(400).json({ error: 'Paramètre "q" manquant' });
+
+  // Payload standard pour l'API Innertube (client WEB)[reference:3]
+  const payload = {
+    context: {
+      client: {
+        clientName: 'WEB',
+        clientVersion: '2.20240101.00.00',
+        hl: 'fr',
+        gl: 'FR'
+      }
+    },
+    query: q
+  };
+
+  // Clé API publique utilisée par le site web de YouTube[reference:4]
+  const API_KEY = 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
+  const url = `https://www.youtube.com/youtubei/v1/search?key=${API_KEY}&prettyPrint=false`;
 
   try {
-    const r = await fetch(url);
-    const data = await r.json();
-    if (data.error) return res.status(500).json({ error: data.error.message });
-    // Les recherches précises (import Spotify) sont gardées en cache plus longtemps : économise le quota
-    res.setHeader('Cache-Control', q && max ? 's-maxage=604800, stale-while-revalidate=86400' : 's-maxage=1800, stale-while-revalidate=3600');
-    res.status(200).json(data);
-  } catch (e) {
-    res.status(500).json({ error: 'Erreur API' });
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) throw new Error(`Erreur YouTube: ${response.status}`);
+
+    const data = await response.json();
+
+    // --- Extraction des vidéos depuis la réponse d'Innertube ---
+    const videos = [];
+    // La structure de réponse est complexe, on navigue dans les "renderers"[reference:5]
+    const contents = data?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents || [];
+    
+    for (const section of contents) {
+      const items = section?.itemSectionRenderer?.contents || [];
+      for (const item of items) {
+        if (item.videoRenderer) {
+          const v = item.videoRenderer;
+          const title = v.title?.runs?.[0]?.text || '';
+          const videoId = v.videoId;
+          const channel = v.ownerText?.runs?.[0]?.text || 'Artiste inconnu';
+          // On récupère la miniature la plus grande disponible
+          const thumb = v.thumbnail?.thumbnails?.slice(-1)[0]?.url || '';
+          
+          if (videoId && title) {
+            videos.push({ id: videoId, title, channel, thumb });
+          }
+        }
+      }
+    }
+
+    // On renvoie un format simple et uniforme pour ton application
+    res.status(200).json({ videos });
+
+  } catch (error) {
+    console.error('Erreur Innertube:', error);
+    res.status(500).json({ error: 'Impossible de récupérer les vidéos' });
   }
 }
