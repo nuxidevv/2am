@@ -41,6 +41,41 @@ body:before{width:280px;height:280px;top:-110px;left:-80px;background:rgba(113,9
 .modal{background:rgba(3,4,8,.52);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 @media(max-width:520px){.header{margin-left:10px;margin-right:10px}.player{margin-left:10px;margin-right:10px}.bottom-nav{margin-left:8px;margin-right:8px}.content{padding-top:16px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* Mobile layout pass: reserve space for the fixed player and navigation. */
+@media(max-width:520px){
+  .app{min-height:100dvh}
+  .header{flex:0 0 auto;min-height:64px}
+  .content{flex:1 1 auto;min-height:0;padding:14px 14px calc(190px + env(safe-area-inset-bottom,0px));overflow-x:hidden}
+  .section{min-width:0;margin-bottom:26px}
+  .section-header{gap:10px}
+  .section-title{font-size:22px;line-height:1.1}
+  .section:first-child{padding-top:12px}
+  .section:first-child .section-title{font-size:clamp(36px,11vw,44px);max-width:calc(100vw - 44px)}
+  .carousel{display:flex;overflow-x:auto;overflow-y:hidden;margin-right:-14px;padding-right:14px;scroll-snap-type:x proximity}
+  .carousel > *{scroll-snap-align:start}
+  .card-item{width:132px;flex-basis:132px;min-width:132px}
+  .card-art{aspect-ratio:1;}
+  .track-list{width:100%;overflow:hidden}
+  .track-row{min-width:0;gap:9px;padding:8px;border-radius:14px}
+  .track-info{min-width:0;overflow:hidden}
+  .track-title,.track-artist,.card-title,.card-sub{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .track-actions{flex:0 0 auto}
+  .player{position:relative;flex:0 0 auto;min-height:64px;margin:0 10px 8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));gap:9px;z-index:12}
+  .player-art{width:46px;height:46px;flex:0 0 46px}
+  .player-info{min-width:0;overflow:hidden}
+  .player-title,.player-artist{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .player-controls{flex:0 0 auto}
+  .progress-mini{left:10px;right:10px;bottom:3px}
+  .bottom-nav{position:relative;flex:0 0 auto;min-height:64px;margin:0 8px calc(8px + env(safe-area-inset-bottom,0px));padding:7px 4px 8px;z-index:13}
+  .nav-item{min-width:0;flex:1 1 0;padding:4px 2px;gap:3px}
+  .nav-item span{font-size:10px;line-height:1}
+  .nav-add-btn{width:46px;height:46px;flex:0 0 46px;margin-top:-15px}
+  .modal{align-items:flex-end;padding:12px 10px calc(12px + env(safe-area-inset-bottom,0px))}
+  .modal-card,.picker-card,.settings-card{width:100%;max-width:430px;max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border-radius:24px;padding:22px 16px 16px}
+  .modal-close{top:10px;right:10px}
+  .field input,.field textarea,.settings-select{min-height:46px;width:100%}
+}
 </style>
 </head>
 <body>
