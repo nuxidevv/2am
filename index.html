@@ -90,16 +90,28 @@ body {
   background: var(--glass-bg); border: 1px solid var(--glass-border);
   backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: var(--glass-shadow);
-  border-radius: var(--radius-lg); display: flex; justify-content: space-around;
-  padding: 10px 10px; z-index: 150;
+  border-radius: var(--radius-lg); display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px; z-index: 150;
 }
 .nav-item {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
   color: var(--text-secondary); font-size: 10px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s ease; padding: 8px 16px; border-radius: 16px;
+  cursor: pointer; transition: all 0.2s ease; padding: 8px; border-radius: 16px;
 }
 .nav-item.active { color: var(--text); background: rgba(255,255,255,0.1); }
 .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
+
+/* Bouton + central (surélevé) */
+.nav-add-btn {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text); cursor: pointer; transition: all 0.2s;
+  transform: translateY(-15px); /* Remonte le bouton */
+}
+.nav-add-btn:active { transform: translateY(-15px) scale(0.9); }
+.nav-add-btn svg { width: 28px; height: 28px; }
 
 /* CARTES & LISTES */
 .track-list { display: flex; flex-direction: column; gap: 12px; }
@@ -134,7 +146,7 @@ body {
 
 /* MINI PLAYER */
 .player {
-  position: fixed; left: 16px; right: 16px; bottom: calc(110px + var(--sa-bottom)); /* Remonté */
+  position: fixed; left: 16px; right: 16px; bottom: calc(110px + var(--sa-bottom));
   z-index: 140; display: none; align-items: center; gap: 12px;
   padding: 10px 14px; background: var(--glass-bg); border: 1px solid var(--glass-border);
   backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
@@ -176,7 +188,6 @@ body {
 .fp-title { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fp-artist { font-size: 16px; color: var(--text-secondary); }
 .fp-progress { width: 100%; max-width: 520px; margin-top: 10px; }
-/* Barre de progression avec point blanc */
 .progress-bar { height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; cursor: pointer; position: relative; }
 .progress-fill { height: 100%; background: #fff; width: 0%; border-radius: 3px; position: relative; }
 .progress-fill::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border-radius: 50%; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
@@ -187,15 +198,15 @@ body {
 .fp-ctl.play svg { width: 32px; height: 32px; margin-left: 4px; }
 .fp-ctl svg { width: 24px; height: 24px; }
 
-/* MODALES */
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); display: flex; align-items: flex-end; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+/* MODALES (Z-INDEX 500 POUR PASSER AU-DESSUS DU LECTEUR) */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 500; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 20px;}
 .modal.open { opacity: 1; pointer-events: auto; }
-.modal-card { width: 100%; max-width: 620px; background: rgba(20,20,20,0.85); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-bottom: none; border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 24px 20px calc(40px + var(--sa-bottom)); transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.2,0.9,0.3,1); max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
-.modal.open .modal-card { transform: translateY(0); }
-.modal-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 0 auto 20px; }
-.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-head h3 { font-size: 20px; font-weight: 800; }
-.modal-close { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+.modal-card { width: 100%; max-width: 450px; background: rgba(25,25,25,0.98); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 24px; transform: scale(0.95); transition: transform 0.35s cubic-bezier(0.2,0.9,0.3,1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative;}
+.modal.open .modal-card { transform: scale(1); }
+.modal-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; z-index: 10; transition: 0.2s;}
+.modal-close:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
+.modal-head h3 { font-size: 20px; font-weight: 800; margin-bottom: 20px; padding-right: 30px;}
+
 .field { margin-bottom: 16px; }
 .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; }
 .field input { width: 100%; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); padding: 0 16px; color: #fff; font-size: 16px; outline: none; }
@@ -203,15 +214,15 @@ body {
 .btn { flex: 1; height: 50px; border-radius: 14px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
 .btn.primary { background: #fff; color: #000; }
 .btn.ghost { background: rgba(255,255,255,0.1); color: #fff; }
-.btn.danger { background: rgba(255,69,58,0.15); color: var(--danger); }
 
-/* Playlist Picker */
-.picker-card { background: rgba(30,30,30,0.95); border-radius: 24px; padding: 24px; width: 100%; max-width: 400px; border: 1px solid var(--glass-border); }
-.picker-item { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; background: rgba(255,255,255,0.05); margin-bottom: 8px; cursor: pointer; font-weight: 600; }
+/* Picker Menu */
+.picker-card { background: rgba(25,25,25,0.98); border-radius: 24px; padding: 24px; width: 100%; max-width: 400px; border: 1px solid var(--glass-border); position: relative; }
+.picker-item { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.05); margin-bottom: 10px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.2s;}
 .picker-item:hover { background: rgba(255,255,255,0.15); }
+.picker-item svg { width: 24px; height: 24px; color: var(--text-secondary); }
 
 /* Toasts */
-.toast { position: fixed; bottom: calc(140px + var(--sa-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(255,255,255,0.9); color: #000; padding: 12px 24px; border-radius: 999px; font-size: 14px; font-weight: 700; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.2,0.9,0.3,1); z-index: 400; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.toast { position: fixed; bottom: calc(140px + var(--sa-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(255,255,255,0.95); color: #000; padding: 12px 24px; border-radius: 999px; font-size: 14px; font-weight: 700; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* VUE PLAYLIST DÉTAIL */
@@ -233,9 +244,6 @@ body {
     <img src="/IMG_0838.png" alt="2AM" class="logo-sombre" onerror="this.style.display='none'">
     
     <div class="header-actions">
-      <button class="icon-btn" id="openAddBtn" title="Ajouter de la musique">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-      </button>
       <button class="icon-btn" id="openSettingsBtn" title="Paramètres">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -244,7 +252,6 @@ body {
 
   <main class="content" id="mainContent"></main>
 
-  <!-- Mini Player -->
   <footer class="player" id="miniPlayer">
     <div class="player-art" id="mpArt"></div>
     <div class="player-info">
@@ -257,7 +264,7 @@ body {
     <div class="progress-mini"><div class="progress-mini-fill" id="mpProgress"></div></div>
   </footer>
 
-  <!-- Bottom Nav -->
+  <!-- Bottom Nav avec bouton + central -->
   <nav class="bottom-nav">
     <div class="nav-item active" data-view="home">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -267,6 +274,12 @@ body {
       <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
       <span>Library</span>
     </div>
+    
+    <!-- BOUTON + -->
+    <div class="nav-add-btn" id="navAddBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+    </div>
+
     <div class="nav-item" data-view="discover">
       <svg viewBox="0 0 24 24"><path d="M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1c.61 0 1.1-.49 1.1-1.1s-.49-1.1-1.1-1.1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z"/></svg>
       <span>Discover</span>
@@ -319,44 +332,76 @@ body {
 </div>
 
 <!-- MODALES -->
-<div class="modal" id="addModal">
-  <div class="modal-card">
-    <div class="modal-handle"></div>
-    <div class="modal-head"><h3>Ajouter de la musique</h3><button class="modal-close" onclick="document.getElementById('addModal').classList.remove('open')">✕</button></div>
-    <div class="search-bar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px;color:var(--text-secondary);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="addSearchInput" placeholder="Chercher un son sur YouTube...">
+<!-- Menu Ajouter (+) -->
+<div class="modal" id="addMenuModal">
+  <div class="picker-card">
+    <button class="modal-close" onclick="document.getElementById('addMenuModal').classList.remove('open')">✕</button>
+    <h3 style="margin-bottom:20px; font-size:20px;">Ajouter à 2AM</h3>
+    <div class="picker-item" onclick="document.getElementById('addMenuModal').classList.remove('open'); window.navTo('search'); setTimeout(()=>document.getElementById('searchInput').focus(), 200);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span>Rechercher un son</span>
     </div>
-    <div id="addResults" style="margin-top:16px; max-height: 40vh; overflow-y:auto;"></div>
+    <div class="picker-item" onclick="document.getElementById('addMenuModal').classList.remove('open'); document.getElementById('fileInput').click();">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+      <span>Importer un fichier</span>
+    </div>
+    <div class="picker-item" onclick="document.getElementById('addMenuModal').classList.remove('open'); document.getElementById('spotifyModal').classList.add('open');">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.36.18.54.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3z"/></svg>
+      <span>Playlist Spotify (max 100)</span>
+    </div>
+    <div class="picker-item" onclick="document.getElementById('addMenuModal').classList.remove('open'); document.getElementById('newPlaylistModal').classList.add('open');">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span>Créer une playlist</span>
+    </div>
   </div>
 </div>
 
+<!-- Modal Spotify -->
+<div class="modal" id="spotifyModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="document.getElementById('spotifyModal').classList.remove('open')">✕</button>
+    <div class="modal-head"><h3>Importer de Spotify</h3></div>
+    <div class="field">
+      <label>Lien de la playlist</label>
+      <input type="text" id="spotifyUrlInput" placeholder="https://open.spotify.com/playlist/...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn primary" onclick="document.getElementById('spotifyModal').classList.remove('open'); showToast('Import Spotify simulé (API à connecter)');">Importer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nouvelle Playlist -->
 <div class="modal" id="newPlaylistModal">
   <div class="modal-card">
-    <div class="modal-handle"></div>
-    <div class="modal-head"><h3>Nouvelle playlist</h3><button class="modal-close" onclick="document.getElementById('newPlaylistModal').classList.remove('open')">✕</button></div>
+    <button class="modal-close" onclick="document.getElementById('newPlaylistModal').classList.remove('open')">✕</button>
+    <div class="modal-head"><h3>Nouvelle playlist</h3></div>
     <div class="field"><label>Nom de la playlist</label><input type="text" id="newPlNameInput" placeholder="Ma playlist"></div>
     <div class="modal-actions">
-      <button class="btn ghost" onclick="document.getElementById('newPlaylistModal').classList.remove('open')">Annuler</button>
       <button class="btn primary" id="createPlBtn">Créer</button>
     </div>
   </div>
 </div>
 
-<div class="modal" id="pickerModal" style="align-items:center;">
+<!-- Modal Choix Playlist -->
+<div class="modal" id="pickerModal">
   <div class="picker-card">
+    <button class="modal-close" onclick="document.getElementById('pickerModal').classList.remove('open')">✕</button>
     <h4 style="margin-bottom:16px;font-size:18px;">Ajouter à…</h4>
     <div id="pickerList"></div>
   </div>
 </div>
 
-<div class="modal" id="trackOptionsModal" style="align-items:center;">
+<!-- Modal Options Track -->
+<div class="modal" id="trackOptionsModal">
   <div class="picker-card">
+    <button class="modal-close" onclick="document.getElementById('trackOptionsModal').classList.remove('open')">✕</button>
     <h4 id="toTitle" style="margin-bottom:16px;font-size:18px;">Options</h4>
     <div id="toList"></div>
   </div>
 </div>
 
+<input type="file" id="fileInput" accept="audio/*" multiple style="display:none">
 <div id="ytHidden" style="position:fixed; top:0; left:0; width:1px; height:1px; opacity:0.01; pointer-events:none; z-index:-1;"><div id="ytPlayer"></div></div>
 <div class="toast" id="toastEl"></div>
 
@@ -377,14 +422,9 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){retur
 function fmt(s){if(!isFinite(s)||s<0)s=0;var m=Math.floor(s/60),x=Math.floor(s%60);return m+':'+(x<10?'0':'')+x;}
 function uid(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36);}
 
-// CORRECTION ENCODAGE HTML
 function unescapeHtml(str){
   if(!str) return '';
-  return str.replace(/&#39;/g, "'")
-            .replace(/&quot;/g, '"')
-            .replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>');
+  return str.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 }
 function cleanTitle(t){
   if(!t)return '';
@@ -408,9 +448,9 @@ var S = {
   tracks:[], playlists:[], liked:[], history:[],
   cur:-1, playing:false, queue:null, context:null,
   fullscreenOpen:false, view:'home', trending:[], recs:[], colorCache:{},
-  currentPlaylistId: null
+  currentPlaylistId: null, discoverData: []
 };
-var LS='2am:v8';
+var LS='2am:v9';
 var audio = new Audio(); audio.preload='metadata';
 
 function save(){
@@ -502,7 +542,6 @@ window.playTrack = function(item, opts={}){
 
   renderPlayer();
   openFullscreen();
-  // Ne pas re-render la vue entière ici pour éviter les sauts, sauf si on est sur l'accueil pour mettre à jour l'historique
   if(S.view === 'home') renderHome($('#mainContent')); 
 }
 
@@ -599,22 +638,19 @@ function renderView(){
   else if(S.view === 'playlist') renderPlaylistDetail(el);
 }
 
-// Algorithme de recommandation simple
+// Algorithme de recommandation
 function loadRecommendations() {
   if(S.history.length === 0 && S.liked.length === 0) {
-    // Fallback sur le trending
-    if(S.trending.length > 0) S.recs = S.trending.slice(0, 5);
+    if(S.trending.length > 0) S.recs = S.trending.sort(() => 0.5 - Math.random()).slice(0, 6);
     return;
   }
-  // Prendre un artiste au hasard dans l'historique ou les likes
   var seedTrack = S.history.length > 0 ? S.history[0] : S.tracks.find(t => S.liked.includes(t.id));
   if(!seedTrack) return;
   
   var seedArtist = seedTrack.artist || 'Musique';
   searchOnline(seedArtist).then(results => {
-    // Filtrer ce qu'on a déjà
     var filtered = results.filter(r => !S.tracks.find(t => t.ytId === r.ytId));
-    S.recs = filtered.slice(0, 6);
+    S.recs = filtered.sort(() => 0.5 - Math.random()).slice(0, 6);
     if(S.view === 'home') renderHome($('#mainContent'));
   }).catch(()=>{});
 }
@@ -644,7 +680,6 @@ function renderHome(el){
   `;
   el.innerHTML = html;
 
-  // Historique
   var hRecent = $('#homeRecent');
   var recent = S.history.slice(0, 4);
   if(recent.length === 0) {
@@ -665,26 +700,24 @@ function renderHome(el){
     }).join('');
   }
 
-  // Recommandations
   var hRecs = $('#homeRecs');
   hRecs.innerHTML = S.recs.map(t => `
-    <div class="card-item" onclick="window.addFromOnline('${t.ytId}', '${esc(t.title)}', '${esc(t.channel)}', '${esc(t.thumb)}')">
+    <div class="card-item" onclick="window.playFromOnline('${t.ytId}', '${esc(t.title)}', '${esc(t.channel)}', '${esc(t.thumb)}')">
       <div class="card-art"><img src="${esc(t.thumb)}"></div>
       <div class="card-title">${esc(t.title)}</div>
       <div class="card-sub">${esc(t.channel || 'Artiste')}</div>
     </div>
   `).join('');
 
-  // Tendances
   var hTrend = $('#homeTrending');
   if(S.trending.length === 0){
     loadTrending().then(list => {
-      S.trending = list;
-      renderView(); // Re-render pour injecter
+      S.trending = list.sort(() => 0.5 - Math.random());
+      renderView();
     });
   }
   hTrend.innerHTML = S.trending.slice(0, 10).map(t => `
-    <div class="card-item" onclick="window.addFromOnline('${t.ytId}', '${esc(t.title)}', '${esc(t.channel)}', '${esc(t.thumb)}')">
+    <div class="card-item" onclick="window.playFromOnline('${t.ytId}', '${esc(t.title)}', '${esc(t.channel)}', '${esc(t.thumb)}')">
       <div class="card-art"><img src="${esc(t.thumb)}"></div>
       <div class="card-title">${esc(t.title)}</div>
       <div class="card-sub">${esc(t.channel)}</div>
@@ -692,70 +725,104 @@ function renderHome(el){
   `).join('');
 }
 
-function renderLibrary(el){
+function renderDiscover(el){
+  if(S.discoverData.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-secondary)">Chargement de la découverte...</div>`;
+    // Requête aléatoire pour varier le contenu
+    searchOnline('Nouveautés musique 2024').then(res => {
+      S.discoverData = res.sort(() => 0.5 - Math.random()).slice(0, 10);
+      renderDiscover(el);
+    }).catch(()=>{
+      el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--danger)">Erreur de connexion API.</div>`;
+    });
+    return;
+  }
+
   var html = `
-    <div class="section-header" style="margin-bottom:24px;">
-      <div class="section-title">Your Library</div>
-      <div style="display:flex;gap:8px;">
-        <button class="icon-btn" id="libAddBtn" title="Créer une playlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px;"><path d="M12 5v14M5 12h14"/></svg></button>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header"><div class="section-title small">Playlists</div></div>
-      <div class="carousel" id="libPlaylists"></div>
-    </div>
-
-    <div class="section">
-      <div class="section-header"><div class="section-title small">Songs</div></div>
-      <div class="track-list" id="libSongs"></div>
+    <div class="section-title" style="margin-bottom:20px;">Discover</div>
+    <div class="carousel">
+      ${S.discoverData.map(t => `
+        <div class="card-item" onclick="window.playFromOnline('${t.ytId}', '${esc(t.title)}', '${esc(t.channel)}', '${esc(t.thumb)}')">
+          <div class="card-art"><img src="${esc(t.thumb)}"></div>
+          <div class="card-title">${esc(t.title)}</div>
+          <div class="card-sub">${esc(t.channel)}</div>
+        </div>
+      `).join('')}
     </div>
   `;
   el.innerHTML = html;
+}
 
-  $('#libAddBtn').onclick = () => $('#newPlaylistModal').classList.add('open');
+function renderSearch(el){
+  var html = `
+    <div class="section-title" style="margin-bottom:20px;">Search</div>
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px;color:var(--text-secondary);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search for songs...">
+    </div>
+    
+    <div id="searchResults" style="margin-top:20px; display:none;"></div>
 
-  // Playlists
-  var pList = $('#libPlaylists');
-  var plHtml = `
-    <div class="card-item" onclick="window.openPlaylist('liked')">
-      <div class="card-art" style="background:linear-gradient(135deg,#6A82FB,#FC5C7D);display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:#fff;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    <div id="browseContainer">
+      <div class="section-title small" style="margin-bottom:16px; margin-top:24px;">Browse by Genre</div>
+      <div class="genre-grid">
+        <div class="genre-card" style="background:linear-gradient(45deg, #1DB954, #191414);" onclick="window.searchGenre('Pop Hits')">Pop</div>
+        <div class="genre-card" style="background:linear-gradient(45deg, #FF0000, #000);" onclick="window.searchGenre('Rap FR')">Hip-Hop</div>
+        <div class="genre-card" style="background:linear-gradient(45deg, #8A2BE2, #4B0082);" onclick="window.searchGenre('R&B Soul')">R&B</div>
+        <div class="genre-card" style="background:linear-gradient(45deg, #00FFFF, #0000FF);" onclick="window.searchGenre('Electronic Dance')">Electronic</div>
+        <div class="genre-card" style="background:linear-gradient(45deg, #FF8C00, #FF0000);" onclick="window.searchGenre('Rock Classics')">Rock</div>
+        <div class="genre-card" style="background:linear-gradient(45deg, #32CD32, #006400);" onclick="window.searchGenre('Alternative Indie')">Alternative</div>
       </div>
-      <div class="card-title">Titres aimés</div>
-      <div class="card-sub">${S.liked.length} sons</div>
     </div>
   `;
-  S.playlists.forEach(p => {
-    var cover = p.trackIds.length ? S.tracks.find(t=>t.id===p.trackIds[0])?.thumb : null;
-    plHtml += `
-      <div class="card-item" onclick="window.openPlaylist('${p.id}')">
-        <div class="card-art">${cover ? `<img src="${esc(cover)}">` : '<div style="width:100%;height:100%;background:#333;"></div>'}</div>
-        <div class="card-title">${esc(p.name)}</div>
-        <div class="card-sub">${p.trackIds.length} sons</div>
-      </div>
-    `;
-  });
-  pList.innerHTML = plHtml;
-
-  // Songs
-  var lSongs = $('#libSongs');
-  var allSongs = S.tracks.filter(t=>!t._temp).slice(0, 10);
-  if(allSongs.length === 0) {
-    lSongs.innerHTML = `<div style="color:var(--text-secondary);font-size:14px;">Aucun son dans la bibliothèque. Cliquez sur + pour en ajouter.</div>`;
-  } else {
-    lSongs.innerHTML = allSongs.map(t => `
-      <div class="track-row" onclick="playTrack(${S.tracks.indexOf(t)})">
-        <div class="track-art"><img src="${esc(t.thumb)}"></div>
-        <div class="track-info">
-          <div class="track-title">${esc(t.title)}</div>
-          <div class="track-artist">${esc(t.artist)}</div>
-        </div>
-        <div class="track-more" onclick="event.stopPropagation(); window.openTrackOptions('${t.id}')">•••</div>
-      </div>
-    `).join('');
-  }
+  el.innerHTML = html;
+  
+  var input = $('#searchInput');
+  var timeout;
+  input.oninput = () => {
+    clearTimeout(timeout);
+    var q = input.value.trim();
+    if(!q) { 
+      $('#searchResults').style.display = 'none';
+      $('#browseContainer').style.display = 'block';
+      return; 
+    }
+    
+    $('#browseContainer').style.display = 'none';
+    $('#searchResults').style.display = 'block';
+    
+    timeout = setTimeout(() => {
+      $('#searchResults').innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px;">Recherche...</div>`;
+      searchOnline(q).then(results => {
+        if(results.length === 0) {
+          $('#searchResults').innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px;">Aucun résultat.</div>`;
+          return;
+        }
+        $('#searchResults').innerHTML = results.map(r => `
+          <div class="track-row" onclick="window.playFromOnline('${r.ytId}', '${esc(r.title)}', '${esc(r.channel)}', '${esc(r.thumb)}')">
+            <div class="track-art"><img src="${esc(r.thumb)}"></div>
+            <div class="track-info">
+              <div class="track-title">${esc(r.title)}</div>
+              <div class="track-artist">${esc(r.channel)}</div>
+            </div>
+            <div class="track-more" onclick="event.stopPropagation(); window.addFromOnline('${r.ytId}', '${esc(r.title)}', '${esc(r.channel)}', '${esc(r.thumb)}')">＋</div>
+          </div>
+        `).join('');
+      }).catch((err)=>{
+        // Affichage d'une erreur propre si le quota API est atteint par exemple
+        $('#searchResults').innerHTML = `<div style="color:var(--danger);text-align:center;padding:20px;font-weight:600;">Erreur de recherche. Vérifiez la clé API YouTube sur Vercel.</div>`;
+      });
+    }, 600);
+  };
 }
+
+window.searchGenre = function(genre) {
+  var input = $('#searchInput');
+  if(input) {
+    input.value = genre;
+    input.dispatchEvent(new Event('input'));
+  }
+};
 
 function renderPlaylistDetail(el){
   var isLiked = S.currentPlaylistId === 'liked';
@@ -805,66 +872,64 @@ function renderPlaylistDetail(el){
   el.innerHTML = html;
 }
 
-function renderDiscover(el){
-  el.innerHTML = `<div class="section-title">Discover</div><div style="color:var(--text-secondary);margin-top:20px;">Contenu à venir...</div>`;
-}
-
-function renderSearch(el){
+function renderLibrary(el){
   var html = `
-    <div class="section-title" style="margin-bottom:20px;">Search</div>
-    <div class="search-bar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px;color:var(--text-secondary);"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="searchInput" placeholder="Search for songs...">
+    <div class="section-header" style="margin-bottom:24px;">
+      <div class="section-title">Your Library</div>
     </div>
-    
-    <div id="searchResults" style="margin-top:20px; display:none;"></div>
 
-    <div id="browseContainer">
-      <div class="section-title small" style="margin-bottom:16px; margin-top:24px;">Browse by Genre</div>
-      <div class="genre-grid">
-        <div class="genre-card" style="background:linear-gradient(45deg, #1DB954, #191414);">Pop</div>
-        <div class="genre-card" style="background:linear-gradient(45deg, #FF0000, #000);">Hip-Hop</div>
-        <div class="genre-card" style="background:linear-gradient(45deg, #8A2BE2, #4B0082);">R&B</div>
-        <div class="genre-card" style="background:linear-gradient(45deg, #00FFFF, #0000FF);">Electronic</div>
-        <div class="genre-card" style="background:linear-gradient(45deg, #FF8C00, #FF0000);">Rock</div>
-        <div class="genre-card" style="background:linear-gradient(45deg, #32CD32, #006400);">Alternative</div>
-      </div>
+    <div class="section">
+      <div class="section-header"><div class="section-title small">Playlists</div></div>
+      <div class="carousel" id="libPlaylists"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><div class="section-title small">Songs</div></div>
+      <div class="track-list" id="libSongs"></div>
     </div>
   `;
   el.innerHTML = html;
-  
-  var input = $('#searchInput');
-  var timeout;
-  input.oninput = () => {
-    clearTimeout(timeout);
-    var q = input.value.trim();
-    if(!q) { 
-      $('#searchResults').style.display = 'none';
-      $('#browseContainer').style.display = 'block';
-      return; 
-    }
-    
-    $('#browseContainer').style.display = 'none';
-    $('#searchResults').style.display = 'block';
-    
-    timeout = setTimeout(() => {
-      $('#searchResults').innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px;">Recherche...</div>`;
-      searchOnline(q).then(results => {
-        $('#searchResults').innerHTML = results.map(r => `
-          <div class="track-row" onclick="window.addFromOnline('${r.ytId}', '${esc(r.title)}', '${esc(r.channel)}', '${esc(r.thumb)}')">
-            <div class="track-art"><img src="${esc(r.thumb)}"></div>
-            <div class="track-info">
-              <div class="track-title">${esc(r.title)}</div>
-              <div class="track-artist">${esc(r.channel)}</div>
-            </div>
-            <div class="track-more">＋</div>
-          </div>
-        `).join('');
-      }).catch(()=>{
-        $('#searchResults').innerHTML = `<div style="color:var(--danger);text-align:center;padding:20px;">Erreur de recherche</div>`;
-      });
-    }, 500);
-  };
+
+  // Playlists
+  var pList = $('#libPlaylists');
+  var plHtml = `
+    <div class="card-item" onclick="window.openPlaylist('liked')">
+      <div class="card-art" style="background:linear-gradient(135deg,#6A82FB,#FC5C7D);display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:#fff;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </div>
+      <div class="card-title">Titres aimés</div>
+      <div class="card-sub">${S.liked.length} sons</div>
+    </div>
+  `;
+  S.playlists.forEach(p => {
+    var cover = p.trackIds.length ? S.tracks.find(t=>t.id===p.trackIds[0])?.thumb : null;
+    plHtml += `
+      <div class="card-item" onclick="window.openPlaylist('${p.id}')">
+        <div class="card-art">${cover ? `<img src="${esc(cover)}">` : '<div style="width:100%;height:100%;background:#333;"></div>'}</div>
+        <div class="card-title">${esc(p.name)}</div>
+        <div class="card-sub">${p.trackIds.length} sons</div>
+      </div>
+    `;
+  });
+  pList.innerHTML = plHtml;
+
+  // Songs
+  var lSongs = $('#libSongs');
+  var allSongs = S.tracks.filter(t=>!t._temp).slice(0, 10);
+  if(allSongs.length === 0) {
+    lSongs.innerHTML = `<div style="color:var(--text-secondary);font-size:14px;">Aucun son dans la bibliothèque. Cliquez sur + pour en ajouter.</div>`;
+  } else {
+    lSongs.innerHTML = allSongs.map(t => `
+      <div class="track-row" onclick="playTrack(${S.tracks.indexOf(t)})">
+        <div class="track-art"><img src="${esc(t.thumb)}"></div>
+        <div class="track-info">
+          <div class="track-title">${esc(t.title)}</div>
+          <div class="track-artist">${esc(t.artist)}</div>
+        </div>
+        <div class="track-more" onclick="event.stopPropagation(); window.openTrackOptions('${t.id}')">•••</div>
+      </div>
+    `).join('');
+  }
 }
 
 // --- LOGIQUE D'AJOUT & PLAYLISTS ---
@@ -885,6 +950,17 @@ window.playPlaylist = function(plId) {
   if(!p || p.trackIds.length === 0) return showToast('Playlist vide');
   var tracks = p.trackIds.map(id => S.tracks.find(t => t.id === id)).filter(Boolean);
   if(tracks.length) playTrack(tracks[0], { queue: p.trackIds, context: plId });
+};
+
+// JOUER DIRECTEMENT DEPUIS L'ONLINE
+window.playFromOnline = function(ytId, title, artist, thumb) {
+  var existing = S.tracks.find(t => t.ytId === ytId);
+  if(!existing) {
+    existing = { id: uid(), title, artist, type: 'yt', ytId, thumb, duration: 0, src: 'https://www.youtube.com/watch?v='+ytId };
+    S.tracks.push(existing);
+    save();
+  }
+  window.playTrack(existing);
 };
 
 window.addFromOnline = function(ytId, title, artist, thumb) {
@@ -981,6 +1057,11 @@ $$('.nav-item').forEach(t => {
   t.onclick = () => window.navTo(t.dataset.view);
 });
 
+// Le bouton + au centre
+$('#navAddBtn').onclick = () => {
+  $('#addMenuModal').classList.add('open');
+};
+
 // Événements boutons
 $('#mpPlay').onclick = (e) => { e.stopPropagation(); togglePlay(); };
 $('#closeFullBtn').onclick = closeFullscreen;
@@ -992,7 +1073,7 @@ $('#fpPrevBtn').onclick = (e) => { e.stopPropagation(); prevTrack(); };
 $('#fpNextBtn').onclick = (e) => { e.stopPropagation(); nextTrack(); };
 $('#fpOptionsBtn').onclick = (e) => { e.stopPropagation(); if(S.cur >= 0) window.openTrackOptions(S.tracks[S.cur].id); };
 
-// Progress Bar (Seek)
+// Progress Bar
 $('#fpProgressBar').onclick = (e) => {
   var t = S.tracks[S.cur]; if(!t) return;
   var rect = e.currentTarget.getBoundingClientRect();
@@ -1004,35 +1085,16 @@ $('#fpProgressBar').onclick = (e) => {
   }
 };
 
-// Boutons Header
-$('#openAddBtn').onclick = () => {
-  $('#addModal').classList.add('open');
-  $('#addSearchInput').focus();
-};
-
 $('#openSettingsBtn').onclick = () => {
   showToast('Paramètres bientôt disponibles');
 };
 
-// Recherche dans le modal Ajouter
-$('#addSearchInput').oninput = (e) => {
-  var q = e.target.value.trim();
-  if(!q) return;
-  $('#addResults').innerHTML = `<div style="color:var(--text-secondary);text-align:center;padding:20px;">Recherche...</div>`;
-  setTimeout(() => {
-    searchOnline(q).then(res => {
-      $('#addResults').innerHTML = res.map(r => `
-        <div class="track-row" onclick="window.addFromOnline('${r.ytId}', '${esc(r.title)}', '${esc(r.channel)}', '${esc(r.thumb)}'); document.getElementById('addModal').classList.remove('open');">
-          <div class="track-art"><img src="${esc(r.thumb)}"></div>
-          <div class="track-info">
-            <div class="track-title">${esc(r.title)}</div>
-            <div class="track-artist">${esc(r.channel)}</div>
-          </div>
-          <div class="track-more">＋</div>
-        </div>
-      `).join('');
-    });
-  }, 500);
+// Import de fichier
+$('#fileInput').onchange = (e) => {
+  if(e.target.files.length > 0) {
+    showToast(e.target.files.length + ' fichier(s) importé(s) (simulation)');
+    // La logique d'import réel (IndexedDB) peut être ajoutée ici
+  }
 };
 
 // Création de playlist
