@@ -316,6 +316,25 @@ var S = { tracks:[], playlists:[], liked:[], history:[], cur:-1, playing:false, 
 var LS='2am:jiosaavn-final';
 var audio = new Audio(); audio.preload='metadata';
 
+// --- SAUVEGARDE ET RESTAURATION ---
+function save(){
+  var data = {
+    tracks: S.tracks.filter(t=>!t._temp).map(t=>({id:t.id,title:t.title,artist:t.artist,type:t.type,src:t.type==='file'?null:t.src,stream_url:t.stream_url,thumb:t.thumb,duration:t.duration||0})),
+    playlists: S.playlists, liked: S.liked, history: S.history.filter(t=>!t._temp).slice(0,20)
+  };
+  try{localStorage.setItem(LS,JSON.stringify(data));}catch(e){}
+}
+function restore(){
+  var d=null;try{d=JSON.parse(localStorage.getItem(LS)||'null');}catch(e){}
+  if(!d)return Promise.resolve();
+  S.playlists=d.playlists||[]; S.liked=d.liked||[]; S.history=d.history||[];
+  var p = (d.tracks||[]).map(m=>{
+    if(m.type!=='file'){S.tracks.push(m); return Promise.resolve();}
+    return DB.get('files',m.id).then(b=>{ if(!b)return; m.src=URL.createObjectURL(b); S.tracks.push(m); }).catch(()=>{});
+  });
+  return Promise.all(p);
+}
+
 // --- APPEL API (JioSaavn via /api/music) ---
 async function fetchOnline(action, params = {}) {
   try {
