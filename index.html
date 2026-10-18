@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>2AM - Liquid Glass</title>
+<title>2AM - Musique Illimitée</title>
 <link rel="icon" type="image/png" href="/IMG_0838.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -163,6 +163,10 @@ body {
 .playlist-info h1 { font-size: 28px; font-weight: 900; margin-bottom: 4px; line-height: 1.1; }
 .playlist-info p { color: var(--text-secondary); font-size: 14px; }
 .playlist-actions { display: flex; gap: 12px; margin-bottom: 24px; }
+.import-progress { margin-top: 16px; display: none; }
+.import-progress.active { display: block; }
+.progress-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.progress-fill-import { height: 100%; background: #fff; width: 0%; transition: width 0.2s; border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -174,7 +178,9 @@ body {
     <img src="/83651B24-FA07-4F10-A55D-C3C6122C8206.jpeg" alt="2AM" class="logo-clair" onerror="this.style.display='none'">
     <img src="/IMG_0838.png" alt="2AM" class="logo-sombre" onerror="this.style.display='none'">
     <div class="header-actions">
-      <button class="icon-btn" id="openSettingsBtn" title="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <button class="icon-btn" id="openSettingsBtn" title="Paramètres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
   </header>
 
@@ -235,7 +241,6 @@ body {
   </div>
 </div>
 
-<!-- MODALES -->
 <div class="modal" id="addMenuModal">
   <div class="picker-card">
     <button class="modal-close" onclick="document.getElementById('addMenuModal').classList.remove('open')">✕</button>
@@ -308,29 +313,21 @@ var toastTimer; window.showToast = function(msg){ var el=$('#toastEl'); if(!el) 
 var DB=(function(){ var p=null; function open(){ if(p)return p; p=new Promise(function(res,rej){ var r=indexedDB.open('2am-db',2); r.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains('files'))db.createObjectStore('files');}; r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);}; }); return p; } return { put:function(s,k,v){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readwrite');t.objectStore(s).put(v,k);t.oncomplete=res;t.onerror=function(){rej(t.error);};});});}, get:function(s,k){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readonly');var r=t.objectStore(s).get(k);r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};});});}, del:function(s,k){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readwrite');t.objectStore(s).delete(k);t.oncomplete=res;t.onerror=function(){rej(t.error);};});});} }; })();
 
 var S = { tracks:[], playlists:[], liked:[], history:[], cur:-1, playing:false, queue:null, context:null, fullscreenOpen:false, view:'home', trending:[], recs:[], colorCache:{}, currentPlaylistId: null, discoverData: [] };
-var LS='2am:audius';
+var LS='2am:jiosaavn-final';
 var audio = new Audio(); audio.preload='metadata';
 
-// --- API AUDIUS (Backend Proxy) ---
+// --- APPEL API (JioSaavn via /api/music) ---
 async function fetchOnline(action, params = {}) {
   try {
     const query = new URLSearchParams({ action, ...params }).toString();
     const res = await fetch(`/api/music?${query}`);
     if (!res.ok) throw new Error(`Erreur API: ${res.status}`);
     return res.json();
-  } catch (e) {
-    console.error("Erreur Audius:", e);
-    throw e;
-  }
+  } catch (e) { console.error("Erreur:", e); throw e; }
 }
-function searchOnline(q) {
-  return fetchOnline('search', { q }).then(d => d.tracks || []);
-}
+function searchOnline(q) { return fetchOnline('search', { q }).then(d => d.tracks || []); }
 
-function save(){ var data = { tracks: S.tracks.filter(t=>!t._temp).map(t=>({id:t.id,title:t.title,artist:t.artist,type:t.type,src:t.type==='file'?null:t.src,stream_url:t.stream_url,thumb:t.thumb,duration:t.duration||0})), playlists: S.playlists, liked: S.liked, history: S.history.filter(t=>!t._temp).slice(0,20) }; try{localStorage.setItem(LS,JSON.stringify(data));}catch(e){} }
-function restore(){ var d=null;try{d=JSON.parse(localStorage.getItem(LS)||'null');}catch(e){} if(!d)return Promise.resolve(); S.playlists=d.playlists||[]; S.liked=d.liked||[]; S.history=d.history||[]; var p = (d.tracks||[]).map(m=>{ if(m.type!=='file'){S.tracks.push(m); return Promise.resolve();} return DB.get('files',m.id).then(b=>{ if(!b)return; m.src=URL.createObjectURL(b); S.tracks.push(m); }).catch(()=>{}); }); return Promise.all(p); }
-
-// --- LECTEUR AUDIO NATIF (Audius + Fichiers) ---
+// --- LECTEUR AUDIO NATIF ---
 window.playTrack = function(item, opts={}){
   var idx = typeof item === 'number' ? item : S.tracks.indexOf(item);
   if(idx < 0 || idx >= S.tracks.length) return;
@@ -347,8 +344,7 @@ window.playTrack = function(item, opts={}){
   logoOverlay.classList.remove('fade-out');
   setTimeout(()=>{ logoOverlay.classList.add('fade-out'); }, 1000);
 
-  // Utilisation exclusive du lecteur Audio natif (parfait pour Audius)
-  if(t.type === 'audius'){
+  if(t.type === 'jiosaavn'){
     audio.src = t.stream_url;
   } else {
     audio.src = t.src;
@@ -447,12 +443,12 @@ function renderPlaylistDetail(el){ var isLiked = S.currentPlaylistId === 'liked'
 function renderLibrary(el){ var html = `<div class="section-header" style="margin-bottom:24px;"><div class="section-title">Your Library</div></div><div class="section"><div class="section-header"><div class="section-title small">Playlists</div></div><div class="carousel" id="libPlaylists"></div></div><div class="section"><div class="section-header"><div class="section-title small">Songs</div></div><div class="track-list" id="libSongs"></div></div>`; el.innerHTML = html; var pList = $('#libPlaylists'); var plHtml = `<div class="card-item" onclick="window.openPlaylist('liked')"><div class="card-art" style="background:linear-gradient(135deg,#6A82FB,#FC5C7D);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:#fff;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div><div class="card-title">Titres aimés</div><div class="card-sub">${S.liked.length} sons</div></div>`; S.playlists.forEach(p => { var cover = p.trackIds.length ? S.tracks.find(t=>t.id===p.trackIds[0])?.thumb : null; plHtml += `<div class="card-item" onclick="window.openPlaylist('${p.id}')"><div class="card-art">${cover ? `<img src="${esc(cover)}">` : '<div style="width:100%;height:100%;background:#333;"></div>'}</div><div class="card-title">${esc(p.name)}</div><div class="card-sub">${p.trackIds.length} sons</div></div>`; }); pList.innerHTML = plHtml; var lSongs = $('#libSongs'); var allSongs = S.tracks.filter(t=>!t._temp).slice(0, 10); if(allSongs.length === 0) { lSongs.innerHTML = `<div style="color:var(--text-secondary);font-size:14px;">Aucun son dans la bibliothèque. Cliquez sur + pour en ajouter.</div>`; } else { lSongs.innerHTML = allSongs.map(t => `<div class="track-row" onclick="playTrack(${S.tracks.indexOf(t)})"><div class="track-art"><img src="${esc(t.thumb)}"></div><div class="track-info"><div class="track-title">${esc(t.title)}</div><div class="track-artist">${esc(t.artist)}</div></div><div class="track-more" onclick="event.stopPropagation(); window.openTrackOptions('${t.id}')">•••</div></div>`).join(''); } }
 
 async function importFiles(files) { let count = 0; for (let file of files) { if (!file.type.startsWith('audio/')) continue; const id = uid(); await DB.put('files', id, file); const url = URL.createObjectURL(file); const name = file.name.replace(/\.[^/.]+$/, ""); const parts = name.split(' - '); const artist = parts.length > 1 ? parts[0] : 'Artiste inconnu'; const title = parts.length > 1 ? parts.slice(1).join(' - ') : name; S.tracks.push({ id, title, artist, type: 'file', src: url, duration: 0 }); count++; } save(); renderView(); window.showToast(`${count} fichier(s) importé(s)`); }
-window.importSpotifyPlaylist = async function() { var url = $('#spotifyUrlInput').value.trim(); if(!url) return window.showToast('Collez un lien Spotify valide'); var prog = $('#spotifyProgress'); var fill = $('#spotifyProgressFill'); var text = $('#spotifyProgressText'); prog.classList.add('active'); fill.style.width = '5%'; text.textContent = 'Analyse de la playlist...'; try { let res = await fetch('/api/spotify?url=' + encodeURIComponent(url)); let data = await res.json(); if(!res.ok) throw new Error(data.error || 'Erreur serveur Spotify'); let plName = data.name || 'Playlist Spotify'; let tracks = data.tracks || []; if(tracks.length === 0) throw new Error('Aucune piste trouvée'); let newPl = S.playlists.find(p => p.name === plName); if(!newPl) { newPl = { id: uid(), name: plName, trackIds: [] }; S.playlists.push(newPl); } let added = 0; for (let i = 0; i < tracks.length; i++) { let t = tracks[i]; let q = `${t.artist} ${t.title}`; let pct = Math.round(((i + 1) / tracks.length) * 100); fill.style.width = pct + '%'; text.textContent = `Recherche : ${t.title}... (${i+1}/${tracks.length})`; try { let audiusResults = await searchOnline(q); if(audiusResults.length > 0) { let best = audiusResults[0]; let existing = S.tracks.find(x => x.id === best.id); if(!existing) { existing = { id: best.id, title: best.title, artist: best.artist, type: 'audius', thumb: best.thumb, stream_url: best.stream_url, duration: 0 }; S.tracks.push(existing); } if(newPl.trackIds.indexOf(existing.id) === -1) { newPl.trackIds.push(existing.id); added++; } } } catch(e) { console.warn('Echec pour:', q, e); } } save(); fill.style.width = '100%'; text.textContent = `✅ Terminé ! ${added} sons ajoutés.`; setTimeout(() => { $('#spotifyModal').classList.remove('open'); prog.classList.remove('active'); window.navTo('library'); }, 1500); } catch(err) { text.textContent = 'Erreur : ' + err.message; fill.style.background = 'var(--danger)'; } };
+window.importSpotifyPlaylist = async function() { var url = $('#spotifyUrlInput').value.trim(); if(!url) return window.showToast('Collez un lien Spotify valide'); var prog = $('#spotifyProgress'); var fill = $('#spotifyProgressFill'); var text = $('#spotifyProgressText'); prog.classList.add('active'); fill.style.width = '5%'; text.textContent = 'Analyse de la playlist...'; try { let res = await fetch('/api/spotify?url=' + encodeURIComponent(url)); let data = await res.json(); if(!res.ok) throw new Error(data.error || 'Erreur serveur Spotify'); let plName = data.name || 'Playlist Spotify'; let tracks = data.tracks || []; if(tracks.length === 0) throw new Error('Aucune piste trouvée'); let newPl = S.playlists.find(p => p.name === plName); if(!newPl) { newPl = { id: uid(), name: plName, trackIds: [] }; S.playlists.push(newPl); } let added = 0; for (let i = 0; i < tracks.length; i++) { let t = tracks[i]; let q = `${t.artist} ${t.title}`; let pct = Math.round(((i + 1) / tracks.length) * 100); fill.style.width = pct + '%'; text.textContent = `Recherche : ${t.title}... (${i+1}/${tracks.length})`; try { let saavnResults = await searchOnline(q); if(saavnResults.length > 0) { let best = saavnResults[0]; let existing = S.tracks.find(x => x.id === best.id); if(!existing) { existing = { id: best.id, title: best.title, artist: best.artist, type: 'jiosaavn', thumb: best.thumb, stream_url: best.stream_url, duration: 0 }; S.tracks.push(existing); } if(newPl.trackIds.indexOf(existing.id) === -1) { newPl.trackIds.push(existing.id); added++; } } } catch(e) { console.warn('Echec pour:', q, e); } } save(); fill.style.width = '100%'; text.textContent = `✅ Terminé ! ${added} sons ajoutés.`; setTimeout(() => { $('#spotifyModal').classList.remove('open'); prog.classList.remove('active'); window.navTo('library'); }, 1500); } catch(err) { text.textContent = 'Erreur : ' + err.message; fill.style.background = 'var(--danger)'; } };
 window.navTo = function(view) { S.view = view; $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view)); renderView(); };
 window.openPlaylist = function(plId) { S.currentPlaylistId = plId; window.navTo('playlist'); };
 window.playPlaylist = function(plId) { var p = plId === 'liked' ? { trackIds: S.liked } : S.playlists.find(x => x.id === plId); if(!p || p.trackIds.length === 0) return window.showToast('Playlist vide'); var tracks = p.trackIds.map(id => S.tracks.find(t => t.id === id)).filter(Boolean); if(tracks.length) playTrack(tracks[0], { queue: p.trackIds, context: plId }); };
-window.playFromOnline = function(id, title, artist, thumb, stream_url) { var existing = S.tracks.find(t => t.id === id); if(!existing) { existing = { id, title, artist, type: 'audius', thumb, stream_url, duration: 0 }; S.tracks.push(existing); save(); } window.playTrack(existing); };
-window.addFromOnline = function(id, title, artist, thumb, stream_url) { var existing = S.tracks.find(t => t.id === id); if(!existing) { existing = { id, title, artist, type: 'audius', thumb, stream_url, duration: 0 }; S.tracks.push(existing); save(); } window.currentPendingTrack = existing; openPickerModal(); };
+window.playFromOnline = function(id, title, artist, thumb, stream_url) { var existing = S.tracks.find(t => t.id === id); if(!existing) { existing = { id, title, artist, type: 'jiosaavn', thumb, stream_url, duration: 0 }; S.tracks.push(existing); save(); } window.playTrack(existing); };
+window.addFromOnline = function(id, title, artist, thumb, stream_url) { var existing = S.tracks.find(t => t.id === id); if(!existing) { existing = { id, title, artist, type: 'jiosaavn', thumb, stream_url, duration: 0 }; S.tracks.push(existing); save(); } window.currentPendingTrack = existing; openPickerModal(); };
 window.openTrackOptions = function(trackId) { var t = S.tracks.find(x => x.id === trackId); if(!t) return; window.currentPendingTrack = t; $('#toTitle').textContent = t.title; var html = `<div class="picker-item" onclick="window.playPendingAndClose()"><svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Écouter maintenant</span></div><div class="picker-item" onclick="window.addPendingToLiked()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>Titres aimés</span></div><div class="picker-item" onclick="window.openPickerModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Ajouter à une playlist</span></div>`; $('#toList').innerHTML = html; $('#trackOptionsModal').classList.add('open'); };
 window.playPendingAndClose = function() { var t = window.currentPendingTrack; if(t) window.playTrack(t); $('#trackOptionsModal').classList.remove('open'); };
 window.addPendingToLiked = function() { var t = window.currentPendingTrack; if(t && S.liked.indexOf(t.id) === -1) { S.liked.push(t.id); save(); window.showToast('Ajouté aux titres aimés'); } $('#trackOptionsModal').classList.remove('open'); if(S.view === 'playlist' || S.view === 'library') renderView(); };
