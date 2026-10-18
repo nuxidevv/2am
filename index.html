@@ -88,32 +88,32 @@ body {
   background: var(--glass-bg); border: 1px solid var(--glass-border);
   backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: var(--glass-shadow);
-  border-radius: var(--radius-lg); display: flex; justify-content: space-around; align-items: center;
-  padding: 10px 10px; z-index: 150;
+  border-radius: var(--radius-lg); display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px; z-index: 150;
 }
 .nav-item {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
   color: var(--text-secondary); font-size: 10px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s ease; padding: 8px 12px; border-radius: 16px;
+  cursor: pointer; transition: all 0.2s ease; padding: 8px; border-radius: 16px;
+  flex: 1;
 }
 .nav-item.active { color: var(--text); background: rgba(255,255,255,0.1); }
 .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
 
-/* Bouton + central centré */
+/* Bouton + central */
 .nav-add-btn {
-  position: absolute;
-  left: 50%;
-  top: -15px;
-  transform: translateX(-50%);
+  position: absolute; left: 50%; top: -15px; transform: translateX(-50%);
   width: 54px; height: 54px; border-radius: 50%;
   background: var(--glass-bg); border: 1px solid var(--glass-border);
   backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow);
   display: flex; align-items: center; justify-content: center;
-  color: var(--text); cursor: pointer; transition: all 0.2s;
-  z-index: 160;
+  color: var(--text); cursor: pointer; transition: all 0.2s; z-index: 160;
 }
 .nav-add-btn:active { transform: translateX(-50%) scale(0.9); }
 .nav-add-btn svg { width: 28px; height: 28px; }
+
+/* Espace central pour le bouton + */
+.nav-spacer { width: 54px; flex-shrink: 0; }
 
 /* CARTES & LISTES */
 .track-list { display: flex; flex-direction: column; gap: 12px; }
@@ -200,7 +200,7 @@ body {
 .fp-ctl.play svg { width: 32px; height: 32px; margin-left: 4px; }
 .fp-ctl svg { width: 24px; height: 24px; }
 
-/* MODALES (Z-INDEX 500 POUR PASSER AU-DESSUS DU LECTEUR) */
+/* MODALES (Z-INDEX 500) */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 500; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 20px;}
 .modal.open { opacity: 1; pointer-events: auto; }
 .modal-card { width: 100%; max-width: 450px; background: rgba(25,25,25,0.98); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 24px; transform: scale(0.95); transition: transform 0.35s cubic-bezier(0.2,0.9,0.3,1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative;}
@@ -234,6 +234,12 @@ body {
 .playlist-info h1 { font-size: 28px; font-weight: 900; margin-bottom: 4px; line-height: 1.1; }
 .playlist-info p { color: var(--text-secondary); font-size: 14px; }
 .playlist-actions { display: flex; gap: 12px; margin-bottom: 24px; }
+
+/* BARRE DE PROGRESSION IMPORT */
+.import-progress { margin-top: 16px; display: none; }
+.import-progress.active { display: block; }
+.progress-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.progress-fill-import { height: 100%; background: #fff; width: 0%; transition: width 0.2s; border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -266,7 +272,7 @@ body {
     <div class="progress-mini"><div class="progress-mini-fill" id="mpProgress"></div></div>
   </footer>
 
-  <!-- Bottom Nav avec bouton + central -->
+  <!-- Bottom Nav -->
   <nav class="bottom-nav">
     <div class="nav-item active" data-view="home">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -277,8 +283,7 @@ body {
       <span>Library</span>
     </div>
     
-    <!-- Espace vide pour laisser passer le bouton + -->
-    <div style="width: 54px;"></div>
+    <div class="nav-spacer"></div>
 
     <div class="nav-item" data-view="discover">
       <svg viewBox="0 0 24 24"><path d="M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1c.61 0 1.1-.49 1.1-1.1s-.49-1.1-1.1-1.1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z"/></svg>
@@ -289,7 +294,6 @@ body {
       <span>Search</span>
     </div>
 
-    <!-- BOUTON + -->
     <div class="nav-add-btn" id="navAddBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
     </div>
@@ -337,7 +341,6 @@ body {
 </div>
 
 <!-- MODALES -->
-<!-- Menu Ajouter (+) -->
 <div class="modal" id="addMenuModal">
   <div class="picker-card">
     <button class="modal-close" onclick="document.getElementById('addMenuModal').classList.remove('open')">✕</button>
@@ -361,7 +364,6 @@ body {
   </div>
 </div>
 
-<!-- Modal Spotify -->
 <div class="modal" id="spotifyModal">
   <div class="modal-card">
     <button class="modal-close" onclick="document.getElementById('spotifyModal').classList.remove('open')">✕</button>
@@ -373,10 +375,13 @@ body {
     <div class="modal-actions">
       <button class="btn primary" onclick="importSpotifyPlaylist()">Importer</button>
     </div>
+    <div class="import-progress" id="spotifyProgress">
+      <div class="progress-track"><div class="progress-fill-import" id="spotifyProgressFill"></div></div>
+      <div style="font-size:12px;color:var(--text-secondary);text-align:center;" id="spotifyProgressText">0%</div>
+    </div>
   </div>
 </div>
 
-<!-- Modal Nouvelle Playlist -->
 <div class="modal" id="newPlaylistModal">
   <div class="modal-card">
     <button class="modal-close" onclick="document.getElementById('newPlaylistModal').classList.remove('open')">✕</button>
@@ -388,7 +393,6 @@ body {
   </div>
 </div>
 
-<!-- Modal Choix Playlist -->
 <div class="modal" id="pickerModal">
   <div class="picker-card">
     <button class="modal-close" onclick="document.getElementById('pickerModal').classList.remove('open')">✕</button>
@@ -397,7 +401,6 @@ body {
   </div>
 </div>
 
-<!-- Modal Options Track -->
 <div class="modal" id="trackOptionsModal">
   <div class="picker-card">
     <button class="modal-close" onclick="document.getElementById('trackOptionsModal').classList.remove('open')">✕</button>
@@ -437,7 +440,6 @@ function cleanTitle(t){
   return unescapeHtml(r||t);
 }
 
-// FONCTION TOAST GLOBALE
 var toastTimer;
 window.showToast = function(msg){
   var el=$('#toastEl');
@@ -448,7 +450,25 @@ window.showToast = function(msg){
   toastTimer=setTimeout(function(){el.classList.remove('show');},2400);
 };
 
-var DB=(function(){ var p=null; function open(){ if(p)return p; p=new Promise(function(res,rej){ var r=indexedDB.open('2am-db',2); r.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains('files'))db.createObjectStore('files');}; r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);}; }); return p; } return { put:function(s,k,v){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readwrite');t.objectStore(s).put(v,k);t.oncomplete=res;t.onerror=function(){rej(t.error);};});});}, get:function(s,k){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readonly');var r=t.objectStore(s).get(k);r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};});});}, del:function(s,k){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readwrite');t.objectStore(s).delete(k);t.oncomplete=res;t.onerror=function(){rej(t.error);};});});} }; })();
+// --- INDEXED DB (POUR LES FICHIERS) ---
+var DB=(function(){ 
+  var p=null; 
+  function open(){ 
+    if(p)return p; 
+    p=new Promise(function(res,rej){ 
+      var r=indexedDB.open('2am-db',2); 
+      r.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains('files'))db.createObjectStore('files');}; 
+      r.onsuccess=function(){res(r.result);};
+      r.onerror=function(){rej(r.error);}; 
+    }); 
+    return p; 
+  } 
+  return { 
+    put:function(s,k,v){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readwrite');t.objectStore(s).put(v,k);t.oncomplete=res;t.onerror=function(){rej(t.error);};});});}, 
+    get:function(s,k){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readonly');var r=t.objectStore(s).get(k);r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};});});}, 
+    del:function(s,k){return open().then(function(db){return new Promise(function(res,rej){var t=db.transaction(s,'readwrite');t.objectStore(s).delete(k);t.oncomplete=res;t.onerror=function(){rej(t.error);};});});} 
+  }; 
+})();
 
 var S = {
   tracks:[], playlists:[], liked:[], history:[],
@@ -456,7 +476,7 @@ var S = {
   fullscreenOpen:false, view:'home', trending:[], recs:[], colorCache:{},
   currentPlaylistId: null, discoverData: []
 };
-var LS='2am:v10';
+var LS='2am:v11';
 var audio = new Audio(); audio.preload='metadata';
 
 function save(){
@@ -477,14 +497,11 @@ function restore(){
   return Promise.all(p);
 }
 
-// --- API YOUTUBE ---
+// --- API YOUTUBE (VERSION QUI FONCTIONNAIT) ---
 function fetchOnline(params){
   var qs=new URLSearchParams(params).toString();
-  return fetch('/api/youtube?'+qs).then(r=>{
-    if(!r.ok) {
-        if (r.status === 500) throw new Error("Erreur serveur API : Vérifiez la clé YOUTUBE_API_KEY sur Vercel et redéployez.");
-        throw new Error('Erreur réseau ('+r.status+')');
-    }
+  return fetch('/api/youtube?'+qs).then(function(r){
+    if(!r.ok){return r.json().catch(function(){return {};}).then(function(e){throw new Error(e.error||('Erreur API ('+r.status+')'));});}
     return r.json();
   });
 }
@@ -647,7 +664,6 @@ function renderView(){
   else if(S.view === 'playlist') renderPlaylistDetail(el);
 }
 
-// Algorithme de recommandation
 function loadRecommendations() {
   if(S.history.length === 0 && S.liked.length === 0) {
     if(S.trending.length > 0) S.recs = S.trending.sort(() => 0.5 - Math.random()).slice(0, 6);
@@ -817,7 +833,7 @@ function renderSearch(el){
           </div>
         `).join('');
       }).catch((err)=>{
-        $('#searchResults').innerHTML = `<div style="color:var(--danger);text-align:center;padding:20px;font-weight:600;">Erreur de recherche. Vérifiez la clé API YouTube sur Vercel et redéployez.</div>`;
+        $('#searchResults').innerHTML = `<div style="color:var(--danger);text-align:center;padding:20px;font-weight:600;">Erreur: ${err.message}</div>`;
       });
     }, 600);
   };
@@ -937,7 +953,97 @@ function renderLibrary(el){
   }
 }
 
-// --- LOGIQUE D'AJOUT & PLAYLISTS ---
+// --- LOGIQUE D'IMPORTATION RÉELLE ---
+
+// Importation de fichiers (IndexedDB)
+async function importFiles(files) {
+  let count = 0;
+  for (let file of files) {
+    if (!file.type.startsWith('audio/')) continue;
+    const id = uid();
+    await DB.put('files', id, file);
+    const url = URL.createObjectURL(file);
+    const name = file.name.replace(/\.[^/.]+$/, "");
+    const parts = name.split(' - ');
+    const artist = parts.length > 1 ? parts[0] : 'Artiste inconnu';
+    const title = parts.length > 1 ? parts.slice(1).join(' - ') : name;
+    S.tracks.push({ id, title, artist, type: 'file', src: url, duration: 0 });
+    count++;
+  }
+  save();
+  renderView();
+  window.showToast(`${count} fichier(s) importé(s)`);
+}
+
+// Importation Spotify
+window.importSpotifyPlaylist = async function() {
+  var url = $('#spotifyUrlInput').value.trim();
+  if(!url) return window.showToast('Collez un lien Spotify valide');
+  
+  var prog = $('#spotifyProgress');
+  var fill = $('#spotifyProgressFill');
+  var text = $('#spotifyProgressText');
+  
+  prog.classList.add('active');
+  fill.style.width = '5%';
+  text.textContent = 'Analyse de la playlist...';
+  
+  try {
+    let res = await fetch('/api/spotify?url=' + encodeURIComponent(url));
+    let data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Erreur serveur Spotify');
+
+    let plName = data.name || 'Playlist Spotify';
+    let tracks = data.tracks || [];
+    if(tracks.length === 0) throw new Error('Aucune piste trouvée');
+    
+    let newPl = S.playlists.find(p => p.name === plName);
+    if(!newPl) {
+      newPl = { id: uid(), name: plName, trackIds: [] };
+      S.playlists.push(newPl);
+    }
+
+    let added = 0;
+    for (let i = 0; i < tracks.length; i++) {
+        let t = tracks[i];
+        let q = `${t.artist} ${t.title}`;
+        let pct = Math.round(((i + 1) / tracks.length) * 100);
+        fill.style.width = pct + '%';
+        text.textContent = `Recherche : ${t.title}... (${i+1}/${tracks.length})`;
+        
+        try {
+            let ytResults = await searchOnline(q);
+            if(ytResults.length > 0) {
+                let best = ytResults[0];
+                let existing = S.tracks.find(x => x.ytId === best.ytId);
+                if(!existing) {
+                    existing = { id: uid(), title: best.title, artist: best.channel, type: 'yt', ytId: best.ytId, thumb: best.thumb, duration: 0, src: 'https://www.youtube.com/watch?v='+best.ytId };
+                    S.tracks.push(existing);
+                }
+                if(newPl.trackIds.indexOf(existing.id) === -1) {
+                    newPl.trackIds.push(existing.id);
+                    added++;
+                }
+            }
+        } catch(e) {
+            console.warn('Echec pour:', q, e);
+        }
+    }
+
+    save();
+    fill.style.width = '100%';
+    text.textContent = `✅ Terminé ! ${added} sons ajoutés.`;
+    setTimeout(() => {
+      $('#spotifyModal').classList.remove('open');
+      prog.classList.remove('active');
+      window.navTo('library');
+    }, 1500);
+    
+  } catch(err) {
+    text.textContent = 'Erreur : ' + err.message;
+    fill.style.background = 'var(--danger)';
+  }
+};
 
 window.navTo = function(view) {
   S.view = view;
@@ -957,7 +1063,6 @@ window.playPlaylist = function(plId) {
   if(tracks.length) playTrack(tracks[0], { queue: p.trackIds, context: plId });
 };
 
-// JOUER DIRECTEMENT DEPUIS L'ONLINE
 window.playFromOnline = function(ytId, title, artist, thumb) {
   var existing = S.tracks.find(t => t.ytId === ytId);
   if(!existing) {
@@ -1056,70 +1161,8 @@ window.addPendingToPlaylist = function(plId) {
   if(S.view === 'playlist') renderView();
 };
 
-// IMPORT SPOTIFY
-window.importSpotifyPlaylist = async function() {
-  var url = $('#spotifyUrlInput').value.trim();
-  if(!url) return window.showToast('Collez un lien Spotify valide');
-  
-  $('#spotifyModal').classList.remove('open');
-  window.showToast('Analyse de la playlist Spotify...');
-  
-  try {
-    // Appel à ton API Spotify (api/spotify.js)
-    let res = await fetch('/api/spotify?url=' + encodeURIComponent(url));
-    let data = await res.json();
-    if(!res.ok) throw new Error(data.error || 'Erreur serveur');
-
-    let plName = data.name || 'Playlist Spotify';
-    let tracks = data.tracks || [];
-    if(tracks.length === 0) throw new Error('Aucune piste trouvée');
-    
-    window.showToast(`Recherche de ${tracks.length} sons sur YouTube...`);
-
-    let newPl = S.playlists.find(p => p.name === plName);
-    if(!newPl) {
-      newPl = { id: uid(), name: plName, trackIds: [] };
-      S.playlists.push(newPl);
-    }
-
-    let added = 0;
-    // On recherche les sons un par un pour ne pas exploser l'API
-    for (let i = 0; i < tracks.length; i++) {
-        let t = tracks[i];
-        let q = `${t.artist} ${t.title}`;
-        try {
-            let ytResults = await searchOnline(q);
-            if(ytResults.length > 0) {
-                let best = ytResults[0];
-                let existing = S.tracks.find(x => x.ytId === best.ytId);
-                if(!existing) {
-                    existing = { id: uid(), title: best.title, artist: best.channel, type: 'yt', ytId: best.ytId, thumb: best.thumb, duration: 0, src: 'https://www.youtube.com/watch?v='+best.ytId };
-                    S.tracks.push(existing);
-                }
-                if(newPl.trackIds.indexOf(existing.id) === -1) {
-                    newPl.trackIds.push(existing.id);
-                    added++;
-                }
-            }
-        } catch(e) {
-            console.warn('Echec recherche pour:', q);
-        }
-        if (i % 5 === 0) window.showToast(`Importation : ${i}/${tracks.length}...`);
-    }
-
-    save();
-    renderView();
-    window.showToast(`✅ ${added} sons ajoutés à « ${plName} »`);
-    window.navTo('library');
-    
-  } catch(err) {
-    window.showToast('Erreur : ' + err.message);
-  }
-};
-
 // --- INITIALISATION ---
 
-// Fermer les modales en cliquant à côté
 $$('.modal').forEach(m => {
   m.addEventListener('click', (e) => {
     if(e.target === m) m.classList.remove('open');
@@ -1158,12 +1201,15 @@ $('#openSettingsBtn').onclick = () => {
   window.showToast('Paramètres bientôt disponibles');
 };
 
+// Importation Fichiers
 $('#fileInput').onchange = (e) => {
   if(e.target.files.length > 0) {
-    window.showToast(e.target.files.length + ' fichier(s) importé(s) (simulation)');
+    importFiles(e.target.files);
+    e.target.value = '';
   }
 };
 
+// Création de playlist
 $('#createPlBtn').onclick = () => {
   var name = $('#newPlNameInput').value.trim();
   if(!name) return window.showToast('Entrez un nom');
