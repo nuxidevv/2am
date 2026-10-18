@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>2AM - Music Without Limits</title>
+<title>2AM - Liquid Glass</title>
 <link rel="icon" type="image/png" href="/IMG_0838.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -134,7 +134,7 @@ body {
 
 /* MINI PLAYER */
 .player {
-  position: fixed; left: 16px; right: 16px; bottom: calc(90px + var(--sa-bottom));
+  position: fixed; left: 16px; right: 16px; bottom: calc(110px + var(--sa-bottom)); /* Remonté */
   z-index: 140; display: none; align-items: center; gap: 12px;
   padding: 10px 14px; background: var(--glass-bg); border: 1px solid var(--glass-border);
   backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
@@ -176,9 +176,11 @@ body {
 .fp-title { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fp-artist { font-size: 16px; color: var(--text-secondary); }
 .fp-progress { width: 100%; max-width: 520px; margin-top: 10px; }
-.progress-bar { height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; cursor: pointer; position: relative; }
-.progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
-.time-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+/* Barre de progression avec point blanc */
+.progress-bar { height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; cursor: pointer; position: relative; }
+.progress-fill { height: 100%; background: #fff; width: 0%; border-radius: 3px; position: relative; }
+.progress-fill::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border-radius: 50%; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
+.time-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-top: 8px; font-variant-numeric: tabular-nums; }
 .fp-controls { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 10px; }
 .fp-ctl { width: 50px; height: 50px; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .fp-ctl.play { width: 72px; height: 72px; background: #fff; color: #000; border: none; box-shadow: 0 0 20px rgba(255,255,255,0.3); }
@@ -211,6 +213,14 @@ body {
 /* Toasts */
 .toast { position: fixed; bottom: calc(140px + var(--sa-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(255,255,255,0.9); color: #000; padding: 12px 24px; border-radius: 999px; font-size: 14px; font-weight: 700; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.2,0.9,0.3,1); z-index: 400; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* VUE PLAYLIST DÉTAIL */
+.playlist-header { display: flex; align-items: flex-end; gap: 20px; margin-bottom: 24px; }
+.playlist-cover { width: 120px; height: 120px; border-radius: 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); overflow: hidden; flex-shrink: 0; }
+.playlist-cover img { width: 100%; height: 100%; object-fit: cover; }
+.playlist-info h1 { font-size: 28px; font-weight: 900; margin-bottom: 4px; line-height: 1.1; }
+.playlist-info p { color: var(--text-secondary); font-size: 14px; }
+.playlist-actions { display: flex; gap: 12px; margin-bottom: 24px; }
 </style>
 </head>
 <body>
@@ -284,7 +294,6 @@ body {
     <div class="fp-media-container">
       <div class="fp-art" id="fpArt">
         <img id="fpCover" alt="">
-        <!-- Le logo qui disparaît après 1s -->
         <div id="fpLogoOverlay" class="fade-out">
           <img src="/83651B24-FA07-4F10-A55D-C3C6122C8206.jpeg" class="logo-clair" style="width:50%;object-fit:contain;" onerror="this.style.display='none'">
           <img src="/IMG_0838.png" class="logo-sombre" style="width:50%;object-fit:contain;" onerror="this.style.display='none'">
@@ -297,18 +306,19 @@ body {
     </div>
   </div>
   <div class="fp-progress">
-    <div class="progress-bar" id="fpProgressBar"><div class="progress-fill" id="fpProgressFill"></div></div>
+    <div class="progress-bar" id="fpProgressBar">
+      <div class="progress-fill" id="fpProgressFill"></div>
+    </div>
     <div class="time-row"><span id="fpCur">0:00</span><span id="fpDur">0:00</span></div>
   </div>
   <div class="fp-controls">
-    <button class="fp-ctl" data-act="prev"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 5L8 12l10 7V5zM6 5v14h2V5H6z"/></svg></button>
-    <button class="fp-ctl play" data-act="toggle" id="fpPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
-    <button class="fp-ctl" data-act="next"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5l10 7-10 7V5zM18 5v14h-2V5h2z"/></svg></button>
+    <button class="fp-ctl" id="fpPrevBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 5L8 12l10 7V5zM6 5v14h2V5H6z"/></svg></button>
+    <button class="fp-ctl play" id="fpPlayBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="fp-ctl" id="fpNextBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5l10 7-10 7V5zM18 5v14h-2V5h2z"/></svg></button>
   </div>
 </div>
 
 <!-- MODALES -->
-<!-- Modal d'Ajout (Recherche YouTube) -->
 <div class="modal" id="addModal">
   <div class="modal-card">
     <div class="modal-handle"></div>
@@ -321,7 +331,6 @@ body {
   </div>
 </div>
 
-<!-- Modal Nouvelle Playlist -->
 <div class="modal" id="newPlaylistModal">
   <div class="modal-card">
     <div class="modal-handle"></div>
@@ -334,7 +343,6 @@ body {
   </div>
 </div>
 
-<!-- Modal Choix Playlist (pour ajouter un son) -->
 <div class="modal" id="pickerModal" style="align-items:center;">
   <div class="picker-card">
     <h4 style="margin-bottom:16px;font-size:18px;">Ajouter à…</h4>
@@ -342,7 +350,6 @@ body {
   </div>
 </div>
 
-<!-- MODAL OPTIONS TRACK -->
 <div class="modal" id="trackOptionsModal" style="align-items:center;">
   <div class="picker-card">
     <h4 id="toTitle" style="margin-bottom:16px;font-size:18px;">Options</h4>
@@ -369,9 +376,22 @@ function $$(s){return document.querySelectorAll(s);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function fmt(s){if(!isFinite(s)||s<0)s=0;var m=Math.floor(s/60),x=Math.floor(s%60);return m+':'+(x<10?'0':'')+x;}
 function uid(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36);}
-function cleanTitle(t){ if(!t)return ''; var r=t.replace(/\s*[\(\[]\s*(clip\s*officiel|official\s*(music\s*)?video|official\s*audio|lyric\s*video|lyrics?|audio\s*only|audio|hd|hq|4k|mv|m\/v)\s*[\)\]]/gi,'').replace(/\s*[\(\[]\s*(clip|video|vidéo)\s*(officiel|officielle|official)?\s*[\)\]]/gi,'').replace(/\s{2,}/g,' ').trim(); return r||t; }
 
-// FONCTION TOAST CORRIGÉE
+// CORRECTION ENCODAGE HTML
+function unescapeHtml(str){
+  if(!str) return '';
+  return str.replace(/&#39;/g, "'")
+            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>');
+}
+function cleanTitle(t){
+  if(!t)return '';
+  var r=t.replace(/\s*[\(\[]\s*(clip\s*officiel|official\s*(music\s*)?video|official\s*audio|lyric\s*video|lyrics?|audio\s*only|audio|hd|hq|4k|mv|m\/v)\s*[\)\]]/gi,'').replace(/\s*[\(\[]\s*(clip|video|vidéo)\s*(officiel|officielle|official)?\s*[\)\]]/gi,'').replace(/\s{2,}/g,' ').trim();
+  return unescapeHtml(r||t);
+}
+
 var toastTimer;
 function showToast(msg){
   var el=$('#toastEl');
@@ -387,9 +407,10 @@ var DB=(function(){ var p=null; function open(){ if(p)return p; p=new Promise(fu
 var S = {
   tracks:[], playlists:[], liked:[], history:[],
   cur:-1, playing:false, queue:null, context:null,
-  fullscreenOpen:false, view:'home', trending:[], recs:[], colorCache:{}
+  fullscreenOpen:false, view:'home', trending:[], recs:[], colorCache:{},
+  currentPlaylistId: null
 };
-var LS='2am:v7';
+var LS='2am:v8';
 var audio = new Audio(); audio.preload='metadata';
 
 function save(){
@@ -423,12 +444,12 @@ function normalize(item){
   if(!id)return null;
   var t=item.snippet.thumbnails||{};
   var thumb=(t.maxres||t.standard||t.high||t.medium||t.default||{}).url||'';
-  return {ytId:id, title:cleanTitle(item.snippet.title), channel:item.snippet.channelTitle, thumb:thumb};
+  return {ytId:id, title:cleanTitle(item.snippet.title), channel:unescapeHtml(item.snippet.channelTitle), thumb:thumb};
 }
 function searchOnline(q){ return fetchOnline({q:q}).then(d=>(d.items||[]).map(normalize).filter(Boolean)); }
 function loadTrending(){ return fetchOnline({region:'FR'}).then(d=>(d.items||[]).map(normalize).filter(Boolean)); }
 
-// --- YT PLAYER (Caché) ---
+// --- YT PLAYER ---
 var ytPlayer=null, ytReady=false, ytPending=null, ytTimer=null;
 window.onYouTubeIframeAPIReady=function(){
   try{
@@ -467,10 +488,9 @@ window.playTrack = function(item, opts={}){
   if(S.history.length > 20) S.history.pop();
   save();
 
-  // Reset logo fade
   var logoOverlay = $('#fpLogoOverlay');
   logoOverlay.classList.remove('fade-out');
-  setTimeout(()=>{ logoOverlay.classList.add('fade-out'); }, 1000); // Disparaît après 1s
+  setTimeout(()=>{ logoOverlay.classList.add('fade-out'); }, 1000);
 
   if(t.type === 'yt'){
     try{ audio.pause(); audio.removeAttribute('src'); audio.load(); }catch(e){}
@@ -482,7 +502,8 @@ window.playTrack = function(item, opts={}){
 
   renderPlayer();
   openFullscreen();
-  renderView(); // Mettre à jour l'UI (historique, etc)
+  // Ne pas re-render la vue entière ici pour éviter les sauts, sauf si on est sur l'accueil pour mettre à jour l'historique
+  if(S.view === 'home') renderHome($('#mainContent')); 
 }
 
 function togglePlay(){
@@ -540,7 +561,7 @@ audio.addEventListener('ended', nextTrack);
 function updatePlayIcons(){
   var icon = S.playing ? '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>' : '<path d="M8 5v14l11-7z"/>';
   $('#mpPlay').innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor">${icon}</svg>`;
-  $('#fpPlay').innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor">${icon}</svg>`;
+  $('#fpPlayBtn').innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor">${icon}</svg>`;
   $('#miniPlayer').classList.toggle('visible', S.cur >= 0);
 }
 
@@ -575,9 +596,32 @@ function renderView(){
   else if(S.view === 'library') renderLibrary(el);
   else if(S.view === 'discover') renderDiscover(el);
   else if(S.view === 'search') renderSearch(el);
+  else if(S.view === 'playlist') renderPlaylistDetail(el);
+}
+
+// Algorithme de recommandation simple
+function loadRecommendations() {
+  if(S.history.length === 0 && S.liked.length === 0) {
+    // Fallback sur le trending
+    if(S.trending.length > 0) S.recs = S.trending.slice(0, 5);
+    return;
+  }
+  // Prendre un artiste au hasard dans l'historique ou les likes
+  var seedTrack = S.history.length > 0 ? S.history[0] : S.tracks.find(t => S.liked.includes(t.id));
+  if(!seedTrack) return;
+  
+  var seedArtist = seedTrack.artist || 'Musique';
+  searchOnline(seedArtist).then(results => {
+    // Filtrer ce qu'on a déjà
+    var filtered = results.filter(r => !S.tracks.find(t => t.ytId === r.ytId));
+    S.recs = filtered.slice(0, 6);
+    if(S.view === 'home') renderHome($('#mainContent'));
+  }).catch(()=>{});
 }
 
 function renderHome(el){
+  if(S.recs.length === 0) loadRecommendations();
+
   var html = `
     <div class="section">
       <div class="section-title">For You</div>
@@ -623,7 +667,6 @@ function renderHome(el){
 
   // Recommandations
   var hRecs = $('#homeRecs');
-  if(S.recs.length === 0) S.recs = S.trending.slice(0, 5); // Fake recs basées sur le trending
   hRecs.innerHTML = S.recs.map(t => `
     <div class="card-item" onclick="window.addFromOnline('${t.ytId}', '${esc(t.title)}', '${esc(t.channel)}', '${esc(t.thumb)}')">
       <div class="card-art"><img src="${esc(t.thumb)}"></div>
@@ -637,7 +680,7 @@ function renderHome(el){
   if(S.trending.length === 0){
     loadTrending().then(list => {
       S.trending = list;
-      renderView();
+      renderView(); // Re-render pour injecter
     });
   }
   hTrend.innerHTML = S.trending.slice(0, 10).map(t => `
@@ -675,7 +718,7 @@ function renderLibrary(el){
   // Playlists
   var pList = $('#libPlaylists');
   var plHtml = `
-    <div class="card-item" onclick="window.playLiked()">
+    <div class="card-item" onclick="window.openPlaylist('liked')">
       <div class="card-art" style="background:linear-gradient(135deg,#6A82FB,#FC5C7D);display:flex;align-items:center;justify-content:center;">
         <svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:#fff;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
       </div>
@@ -686,7 +729,7 @@ function renderLibrary(el){
   S.playlists.forEach(p => {
     var cover = p.trackIds.length ? S.tracks.find(t=>t.id===p.trackIds[0])?.thumb : null;
     plHtml += `
-      <div class="card-item" onclick="window.playPlaylist('${p.id}')">
+      <div class="card-item" onclick="window.openPlaylist('${p.id}')">
         <div class="card-art">${cover ? `<img src="${esc(cover)}">` : '<div style="width:100%;height:100%;background:#333;"></div>'}</div>
         <div class="card-title">${esc(p.name)}</div>
         <div class="card-sub">${p.trackIds.length} sons</div>
@@ -712,6 +755,54 @@ function renderLibrary(el){
       </div>
     `).join('');
   }
+}
+
+function renderPlaylistDetail(el){
+  var isLiked = S.currentPlaylistId === 'liked';
+  var p = isLiked ? null : S.playlists.find(x => x.id === S.currentPlaylistId);
+  if(!isLiked && !p) return;
+
+  var title = isLiked ? 'Titres aimés' : p.name;
+  var trackIds = isLiked ? S.liked : p.trackIds;
+  var tracks = trackIds.map(id => S.tracks.find(t => t.id === id)).filter(Boolean);
+  var cover = tracks.length > 0 ? tracks[0].thumb : null;
+
+  var html = `
+    <button class="icon-btn" style="margin-bottom:20px;" onclick="window.navTo('library')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+
+    <div class="playlist-header">
+      <div class="playlist-cover">
+        ${cover ? `<img src="${esc(cover)}">` : (isLiked ? '<div style="width:100%;height:100%;background:linear-gradient(135deg,#6A82FB,#FC5C7D)"></div>' : '<div style="width:100%;height:100%;background:#333;"></div>')}
+      </div>
+      <div class="playlist-info">
+        <h1>${esc(title)}</h1>
+        <p>${tracks.length} titres</p>
+      </div>
+    </div>
+
+    <div class="playlist-actions">
+      <button class="btn primary" style="flex:0 0 auto; padding:0 24px;" onclick="window.playPlaylist('${S.currentPlaylistId}')">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;margin-right:8px;"><path d="M8 5v14l11-7z"/></svg> Lecture
+      </button>
+    </div>
+
+    <div class="track-list">
+      ${tracks.map(t => `
+        <div class="track-row" onclick="playTrack(${S.tracks.indexOf(t)}, {queue: ${JSON.stringify(trackIds)}, context: '${S.currentPlaylistId}'})">
+          <div class="track-art"><img src="${esc(t.thumb)}"></div>
+          <div class="track-info">
+            <div class="track-title">${esc(t.title)}</div>
+            <div class="track-artist">${esc(t.artist)}</div>
+          </div>
+          <div class="track-more" onclick="event.stopPropagation(); window.openTrackOptions('${t.id}')">•••</div>
+        </div>
+      `).join('')}
+      ${tracks.length === 0 ? '<div style="color:var(--text-secondary);">Playlist vide</div>' : ''}
+    </div>
+  `;
+  el.innerHTML = html;
 }
 
 function renderDiscover(el){
@@ -776,7 +867,25 @@ function renderSearch(el){
   };
 }
 
-// --- LOGIQUE D'AJOUT (Add & Playlists) ---
+// --- LOGIQUE D'AJOUT & PLAYLISTS ---
+
+window.navTo = function(view) {
+  S.view = view;
+  $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+  renderView();
+};
+
+window.openPlaylist = function(plId) {
+  S.currentPlaylistId = plId;
+  window.navTo('playlist');
+};
+
+window.playPlaylist = function(plId) {
+  var p = plId === 'liked' ? { trackIds: S.liked } : S.playlists.find(x => x.id === plId);
+  if(!p || p.trackIds.length === 0) return showToast('Playlist vide');
+  var tracks = p.trackIds.map(id => S.tracks.find(t => t.id === id)).filter(Boolean);
+  if(tracks.length) playTrack(tracks[0], { queue: p.trackIds, context: plId });
+};
 
 window.addFromOnline = function(ytId, title, artist, thumb) {
   var existing = S.tracks.find(t => t.ytId === ytId);
@@ -827,20 +936,7 @@ window.addPendingToLiked = function() {
     showToast('Ajouté aux titres aimés');
   }
   $('#trackOptionsModal').classList.remove('open');
-  renderView();
-};
-
-window.playLiked = function() {
-  if(S.liked.length === 0) return showToast('Aucun titre aimé');
-  var tracks = S.liked.map(id => S.tracks.find(t => t.id === id)).filter(Boolean);
-  if(tracks.length) playTrack(tracks[0], { queue: S.liked, context: 'liked' });
-};
-
-window.playPlaylist = function(plId) {
-  var p = S.playlists.find(x => x.id === plId);
-  if(!p || p.trackIds.length === 0) return showToast('Playlist vide');
-  var tracks = p.trackIds.map(id => S.tracks.find(t => t.id === id)).filter(Boolean);
-  if(tracks.length) playTrack(tracks[0], { queue: p.trackIds, context: plId });
+  if(S.view === 'playlist' || S.view === 'library') renderView();
 };
 
 function openPickerModal() {
@@ -876,24 +972,37 @@ window.addPendingToPlaylist = function(plId) {
     showToast('Ajouté à ' + p.name);
   }
   window.closePickerModal();
-  renderView();
+  if(S.view === 'playlist') renderView();
 };
 
 // --- INITIALISATION ---
 
 $$('.nav-item').forEach(t => {
-  t.onclick = () => {
-    $$('.nav-item').forEach(n => n.classList.remove('active'));
-    t.classList.add('active');
-    S.view = t.dataset.view;
-    renderView();
-  };
+  t.onclick = () => window.navTo(t.dataset.view);
 });
 
-$('#mpPlay').onclick = togglePlay;
-$('#fpPlay').onclick = togglePlay;
+// Événements boutons
+$('#mpPlay').onclick = (e) => { e.stopPropagation(); togglePlay(); };
 $('#closeFullBtn').onclick = closeFullscreen;
 $('#miniPlayer').onclick = (e) => { if(!e.target.closest('button')) openFullscreen(); };
+
+// Événements lecteur plein écran
+$('#fpPlayBtn').onclick = (e) => { e.stopPropagation(); togglePlay(); };
+$('#fpPrevBtn').onclick = (e) => { e.stopPropagation(); prevTrack(); };
+$('#fpNextBtn').onclick = (e) => { e.stopPropagation(); nextTrack(); };
+$('#fpOptionsBtn').onclick = (e) => { e.stopPropagation(); if(S.cur >= 0) window.openTrackOptions(S.tracks[S.cur].id); };
+
+// Progress Bar (Seek)
+$('#fpProgressBar').onclick = (e) => {
+  var t = S.tracks[S.cur]; if(!t) return;
+  var rect = e.currentTarget.getBoundingClientRect();
+  var pct = (e.clientX - rect.left) / rect.width;
+  if(t.type === 'yt' && ytPlayer && ytPlayer.getDuration) {
+    ytPlayer.seekTo(ytPlayer.getDuration() * pct, true);
+  } else if (audio.duration) {
+    audio.currentTime = audio.duration * pct;
+  }
+};
 
 // Boutons Header
 $('#openAddBtn').onclick = () => {
