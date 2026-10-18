@@ -76,6 +76,27 @@ body:before{width:280px;height:280px;top:-110px;left:-80px;background:rgba(113,9
   .modal-close{top:10px;right:10px}
   .field input,.field textarea,.settings-select{min-height:46px;width:100%}
 }
+
+/* Final mobile spacing pass: every surface stays inside the viewport. */
+@media(max-width:520px){
+  .header{margin:12px 16px 0!important;padding:12px 14px calc(12px + var(--sa-top))!important;border-radius:22px;min-height:70px}
+  .content{padding:18px 16px calc(190px + var(--sa-bottom))!important;overflow-x:hidden}
+  .section{width:100%;overflow:visible;margin-bottom:32px!important}
+  .section:first-child{padding-top:8px!important}
+  .section-title{max-width:100%;overflow-wrap:break-word}
+  .carousel{width:calc(100% + 0px)!important;margin:0!important;padding:0 0 12px!important;gap:12px!important;overflow-x:auto;overscroll-behavior-x:contain}
+  .carousel:before{content:none!important}
+  .card-item{width:calc((100vw - 44px)/2)!important;min-width:calc((100vw - 44px)/2)!important;max-width:170px!important;flex:0 0 calc((100vw - 44px)/2)!important}
+  .card-art{width:100%;aspect-ratio:1/1;border-radius:18px!important}
+  .card-title,.card-sub{max-width:100%;font-size:13px}
+  .track-list{margin-top:4px}
+  .track-row{width:100%;max-width:100%;}
+  .player{margin:0 16px 8px!important;border-radius:20px!important}
+  .bottom-nav{margin:0 16px calc(10px + var(--sa-bottom))!important;border-radius:22px!important}
+  .nav-item span{font-size:10px!important}
+  .nav-add-btn{margin-top:-12px!important}
+  .settings-card,.modal-card,.picker-card{margin:0;width:100%;}
+}
 </style>
 </head>
 <body>
