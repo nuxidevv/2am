@@ -97,6 +97,32 @@ body:before{width:280px;height:280px;top:-110px;left:-80px;background:rgba(113,9
   .nav-add-btn{margin-top:-12px!important}
   .settings-card,.modal-card,.picker-card{margin:0;width:100%;}
 }
+/* Final mobile rebuild: stable safe-area spacing, compact chrome, and no horizontal bleed. */
+:root{--accent:#a58cff;--accent-deep:#5347ba}
+@media(max-width:520px){
+  html,body{width:100%;max-width:100%;overflow:hidden}
+  .app{height:100dvh;min-height:0;overflow:hidden}
+  .header{height:64px;min-height:64px;margin:8px 12px 0!important;padding:8px 12px!important;border-radius:18px!important}
+  .logo-clair,.logo-sombre{height:24px;max-width:72px}
+  .header-actions{gap:6px}.header .icon-btn{width:40px;height:40px;border-radius:13px}
+  .content{min-height:0;flex:1 1 auto;width:100%;padding:16px 16px 18px!important;overflow-y:auto;overflow-x:hidden}
+  .section{width:100%;margin-bottom:26px!important}.section:first-child{padding-top:4px!important}
+  .section:first-child .section-title{font-size:34px;max-width:100%;line-height:1.02}
+  .section-title{font-size:21px;line-height:1.15}.section-title.small{font-size:12px;letter-spacing:.16em}
+  .carousel{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px!important;width:100%!important;margin:0!important;padding:0!important;overflow:visible!important}
+  .card-item{width:100%!important;min-width:0!important;max-width:none!important}.card-art{width:100%;aspect-ratio:1;border-radius:16px!important;margin-bottom:8px}
+  .card-title{font-size:12px;line-height:1.25}.card-sub{font-size:11px}
+  .track-list{width:100%;display:flex;flex-direction:column;gap:8px}.track-row{width:100%;min-height:62px;padding:8px;border-radius:14px;gap:10px}
+  .track-art{width:46px;height:46px;flex:0 0 46px;border-radius:10px;overflow:hidden}.track-info{min-width:0}.track-title{font-size:14px}.track-artist{font-size:11px}
+  .player{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;width:auto!important;min-height:58px!important;height:58px!important;margin:0 12px 6px!important;padding:6px 10px!important;border-radius:17px!important;z-index:20}
+  .player-art{width:44px;height:44px;flex-basis:44px;border-radius:10px;overflow:hidden}.player-controls{margin-left:auto}.pc-btn{width:40px!important;height:40px!important;min-height:40px!important;border-radius:50%!important;background:var(--accent)!important;border:0!important;display:grid!important;place-items:center!important}.pc-btn svg{width:20px;height:20px}
+  .progress-mini{left:10px!important;right:10px!important;bottom:2px!important}
+  .bottom-nav{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;width:auto!important;height:58px!important;min-height:58px!important;margin:0 12px calc(6px + var(--sa-bottom))!important;padding:5px 3px!important;border-radius:18px!important;z-index:21}
+  .nav-item{height:48px;min-height:48px;padding:3px 2px!important;gap:2px!important}.nav-item svg{width:20px;height:20px}.nav-item span{font-size:9px!important}.nav-add-btn{width:42px!important;height:42px!important;flex-basis:42px!important;margin-top:-9px!important;border-radius:14px!important}
+  .modal{padding:10px!important}.modal-card,.picker-card,.settings-card{max-height:calc(100dvh - 20px - var(--sa-top) - var(--sa-bottom));border-radius:20px!important;padding:20px 14px 14px!important}
+  .playlist-header{display:flex;align-items:center;gap:14px}.playlist-cover{width:132px!important;height:132px!important;flex:0 0 132px!important}.playlist-info{min-width:0}.playlist-info h1{font-size:24px!important;overflow-wrap:anywhere}
+}
+@media(min-width:521px){.content{padding-bottom:24px}.player{margin:0 20px 10px}.bottom-nav{margin:0 20px 12px}}
 </style>
 </head>
 <body>
@@ -161,12 +187,15 @@ async function fetchOnline(query) {
     if (!res.ok) throw new Error(`Erreur API: ${res.status}`);
     const data = await res.json();
     if (!data.videos || !Array.isArray(data.videos)) throw new Error('Format de réponse invalide');
-    return data.videos.map(v => ({
-      ytId: v.id,
-      title: cleanTitle(v.title),
-      channel: unescapeHtml(v.channel),
-      thumb: v.thumb
-    }));
+    const blocked = /(?:lyrics?|paroles?|slowed|reverb|nightcore|8d|sped\s*up|playlist|radio|mix|compilation|nrj|hits?\s*\d|karaok[eé]|fan\s*made|cover)/i;
+    return data.videos
+      .filter(v => v && v.id && v.title && v.channel && !blocked.test(`${v.title} ${v.channel}`))
+      .map(v => ({
+        ytId: v.id,
+        title: cleanTitle(v.title),
+        channel: unescapeHtml(v.channel),
+        thumb: v.thumb
+      }));
   } catch (e) {
     console.error("Erreur Innertube:", e);
     throw e;
